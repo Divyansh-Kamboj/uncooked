@@ -1,38 +1,48 @@
 import fitz
+import re
+import os
 
-doc = fitz.open('MathTest.pdf')
+doc = fitz.open("MathTest.pdf")
+output_dir = "question_images"
+os.makedirs(output_dir, exist_ok=True)
 
-print("Num of pages:", doc.page_count)
-last = False
-sub = False
-pagenum = 2
-try:
-    while not last:
-        paper = open('paper.txt', 'w')
-        page = doc.load_page(pagenum)
-        paper.write(page.get_text())
-        paper.close()
-        paper = open("paper.txt", 'r')
-        for i in range(4): 
-            checkline = paper.readline().strip()
-        if checkline == "Additional page":
-            last = True
-        else:
-            for i in range(5): 
-                line = paper.readline().strip()
-            if line == "" or line[0] == '.':
-                sub = True
-                pix = page.get_pixmap()
-                pix.save(f"{pagenum}_sub.png")
-            else:
-                pix = page.get_pixmap()
-                pix.save(f"{pagenum}.png")
-        pagenum += 1
+current_question = None
+question_subpage_count = {}
 
+for page_num in range(2, doc.page_count):
+    page = doc.load_page(page_num)
+    text = page.get_text()
+    lines = text.splitlines()
 
-        
-        
+    # Skip if it's a blank or additional page
+    if "Additional page" in text or "BLANK PAGE" in text:
+        continue
 
-        
-except IOError:
-    print("invalid file")
+    filename = None
+    found = False
+
+    # Combine top lines to handle cases like:
+    # 1\n(a) Sketch the graph...
+    combined = " ".join(lines[:10])  # combine top 10 lines with space
+
+    # Updated regex: captures `1 (a)` or `1\n(a)` as `1`
+    match = re.search(r"\b(\d{1,2})\s*\(?[a-zA-Z]\)?", combined)
+    if match:
+        current_question = match.group(1)
+        question_subpage_count[current_question] = 0
+        filename = f"{current_question}.png"
+        found = True
+
+    if not found and current_question:
+        question_subpage_count[current_question] += 1
+        filename = f"{current_question}_sub{question_subpage_count[current_question]}.png"
+
+    if filename is None:
+        print(f"Page {page_num}: Skipped (no question or continuation found)")
+        continue
+
+    # Save image
+    pix = page.get_pixmap(dpi=150)
+    path = os.path.join(output_dir, filename)
+    pix.save(path)
+    print(f"Saved page {page_num} as {filename}")
