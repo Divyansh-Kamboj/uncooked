@@ -1,10 +1,44 @@
 import fitz
 import re
 import os
-
-doc = fitz.open("MathTest.pdf")
+exam_paper = "9709_W20_12.pdf"
+doc = fitz.open(exam_paper)
 output_dir = "question_images"
 os.makedirs(output_dir, exist_ok=True)
+
+if exam_paper[5] == "S":
+    session = "May/June"
+elif exam_paper[5] == "W":
+    session = "October/November"
+elif exam_paper[5] == "M":
+    session = "February/March"
+
+
+if exam_paper[7] == "5":
+    year = "2025"
+elif exam_paper[7] == "4":
+    year = "2024"
+elif exam_paper[7] == "3":
+    year = "2023"
+elif exam_paper[7] == "2":
+    year = "2022"
+elif exam_paper[7] == "1":
+    year = "2021"
+elif exam_paper[7] == "0":
+    year = "2020"
+
+if exam_paper[9] == "3":
+    component = "Pure 3"
+if exam_paper[9] == "1":
+    component = "Pure 1"
+if exam_paper[9] == "4":
+    component = "Mechanics"
+if exam_paper[9] == "5":
+    component = "Stats 1"
+if exam_paper[9] == "6":
+    component = "Stats 2"
+
+print(f"{component}_{session}_{year}")
 
 current_question = None
 question_subpage_count = {}
