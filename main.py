@@ -3,10 +3,14 @@ import fitz
 import re
 import requests
 
-# ========= Supabase Setup =========
-SUPABASE_URL = "https://oiksocextqybpywsmeyo.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pa3NvY2V4dHF5YnB5d3NtZXlvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTM4NTUzNiwiZXhwIjoyMDY2OTYxNTM2fQ.lCnrXRvw0Oiog9s7rcnnGymqnzsgP7Jv3RtkTkOh2kA"
-BUCKET_NAME = "alevel-math-question-images"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 app = FastAPI()
 
