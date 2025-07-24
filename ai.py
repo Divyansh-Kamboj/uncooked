@@ -21,7 +21,7 @@ total_cost = 0
 component_prompts = {
     "Pure 1": """You are an expert tutor for Cambridge A Level Mathematics, Pure Mathematics 1 (Paper 1).
 
-ONLY use the following topics:
+ONLY use the following list of topics to choose from:
 Quadratics  
 Functions  
 Coordinate geometry  
@@ -31,22 +31,22 @@ Series
 Differentiation  
 Integration  
 
-Your response MUST follow this exact format:
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
-difficulty = Easy or Medium or Hard  
-topic = <topic from the list above>  
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>
 ai_explanation = <step-by-step explanation in plain text>
 
 STRICT RULES:  
-- Do NOT use quotes or markdown.  
-- Do NOT add labels, headings, or lists.  
-- Use ONLY the topics above exactly.  
-- Do NOT rephrase or add commentary.  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
     "Pure 3": """You are an expert tutor for Cambridge A Level Mathematics, Pure Mathematics 3 (Paper 3).
 
-ONLY use the following topics:
+ONLY use the following list of topics to choose from:
 Algebra  
 Logarithmic and exponential functions  
 Trigonometry  
@@ -57,83 +57,83 @@ Vectors
 Differential equations  
 Complex numbers  
 
-Respond exactly like this:
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
-difficulty = Easy or Medium or Hard  
-topic = <topic from the list above>  
+difficulty = <Easy | Medium | Hard>
+topic = <exact topic name from the list above>
 ai_explanation = <step-by-step explanation in plain text>
 
 STRICT RULES:  
-- Do NOT use quotes or markdown.  
-- Do NOT add labels, headings, or lists.  
-- Use ONLY the topics above exactly.  
-- Do NOT rephrase or add commentary.  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
     "Mechanics": """You are an expert tutor for Cambridge A Level Mathematics, Mechanics (Paper 4).
 
-ONLY use the following topics:
+ONLY use the following list of topics to choose from:
 Forces and equilibrium  
 Kinematics of motion in a straight line  
 Momentum  
 Newton’s laws of motion  
 Energy, work and power  
 
-Respond exactly like this:
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
-difficulty = Easy or Medium or Hard  
-topic = <topic from the list above>  
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>  
 ai_explanation = <step-by-step explanation in plain text>
 
 STRICT RULES:  
-- Do NOT use quotes or markdown.  
-- Do NOT add labels, headings, or lists.  
-- Use ONLY the topics above exactly.  
-- Do NOT rephrase or add commentary.  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
     "Stats 1": """You are an expert tutor for Cambridge A Level Mathematics, Statistics 1 (Paper 5).
 
-ONLY use the following topics:
+ONLY use the following list of topics to choose from:
 Representation of data  
 Permutations and combinations  
 Probability  
 Discrete random variables  
 The normal distribution  
 
-Respond exactly like this:
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
-difficulty = Easy or Medium or Hard  
-topic = <topic from the list above>  
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>
 ai_explanation = <step-by-step explanation in plain text>
 
 STRICT RULES:  
-- Do NOT use quotes or markdown.  
-- Do NOT add labels, headings, or lists.  
-- Use ONLY the topics above exactly.  
-- Do NOT rephrase or add commentary.  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
     "Stats 2": """You are an expert tutor for Cambridge A Level Mathematics, Statistics 2 (Paper 6).
 
-ONLY use the following topics:
+ONLY use the following list of topics to choose from:
 The Poisson distribution  
 Linear combinations of random variables  
 Continuous random variables  
 Sampling and estimation  
 Hypothesis tests  
 
-Respond exactly like this:
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
-difficulty = Easy or Medium or Hard  
-topic = <topic from the list above>  
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>  
 ai_explanation = <step-by-step explanation in plain text>
 
 STRICT RULES:  
-- Do NOT use quotes or markdown.  
-- Do NOT add labels, headings, or lists.  
-- Use ONLY the topics above exactly.  
-- Do NOT rephrase or add commentary.  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """
 }
 
@@ -164,22 +164,30 @@ def get_image_bytes(url):
         return None
 
 def extract_fields(text):
-    difficulty = topic = explanation = None
     print("\n📤 Raw Gemini response:\n", text, "\n")
 
-    # Strict regex extraction
-    diff_match = re.search(r'difficulty\s*=\s*"?(Easy|Medium|Hard)"?', text, re.IGNORECASE)
-    topic_match = re.search(r'topic\s*=\s*"?(.+?)"?\n', text, re.IGNORECASE)
-    explain_match = re.search(r'ai_explanation\s*=\s*"(.*?)"', text, re.DOTALL | re.IGNORECASE)
+    difficulty = topic = explanation = None
+
+    # Match: difficulty = Easy/Medium/Hard
+    diff_match = re.search(r'difficulty\s*=\s*(Easy|Medium|Hard)', text, re.IGNORECASE)
+
+    # Match: topic = [anything except newline]
+    topic_match = re.search(r'topic\s*=\s*(.+)', text, re.IGNORECASE)
+
+    # Match: ai_explanation = [everything until end]
+    explain_match = re.search(r'ai_explanation\s*=\s*(.+)', text, re.IGNORECASE | re.DOTALL)
 
     if diff_match:
         difficulty = diff_match.group(1).strip().capitalize()
+
     if topic_match:
         topic = topic_match.group(1).strip()
+
     if explain_match:
         explanation = explain_match.group(1).strip()
 
     return explanation, topic, difficulty
+
 
 def update_question(row_id, explanation, topic, difficulty):
     payload = {
