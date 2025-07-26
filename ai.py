@@ -31,10 +31,13 @@ Series
 Differentiation  
 Integration  
 
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
 Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
 difficulty = <Easy | Medium | Hard>  
-topic = <exact topic name from the list above>
+topic = <exact topic name from the list above>  
 ai_explanation = <step-by-step explanation in plain text>
 
 STRICT RULES:  
@@ -56,6 +59,9 @@ Numerical solution of equations
 Vectors  
 Differential equations  
 Complex numbers  
+
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
 
 Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
@@ -79,6 +85,9 @@ Momentum
 Newton’s laws of motion  
 Energy, work and power  
 
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
 Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
 difficulty = <Easy | Medium | Hard>  
@@ -100,6 +109,9 @@ Permutations and combinations
 Probability  
 Discrete random variables  
 The normal distribution  
+
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
 
 Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
@@ -123,6 +135,9 @@ Continuous random variables
 Sampling and estimation  
 Hypothesis tests  
 
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
 Your response MUST follow this exact format — no markdown, no extra notes, no headings:
 
 difficulty = <Easy | Medium | Hard>  
@@ -136,7 +151,6 @@ STRICT RULES:
 - If unsure about the topic, choose the closest matching topic.
 """
 }
-
 
 # === Supabase headers ===
 db_headers = {
@@ -166,28 +180,23 @@ def get_image_bytes(url):
 def extract_fields(text):
     print("\n📤 Raw Gemini response:\n", text, "\n")
 
+    if "extra page" in text.strip().lower():
+        return "extra page", None, None
+
     difficulty = topic = explanation = None
 
-    # Match: difficulty = Easy/Medium/Hard
     diff_match = re.search(r'difficulty\s*=\s*(Easy|Medium|Hard)', text, re.IGNORECASE)
-
-    # Match: topic = [anything except newline]
     topic_match = re.search(r'topic\s*=\s*(.+)', text, re.IGNORECASE)
-
-    # Match: ai_explanation = [everything until end]
     explain_match = re.search(r'ai_explanation\s*=\s*(.+)', text, re.IGNORECASE | re.DOTALL)
 
     if diff_match:
         difficulty = diff_match.group(1).strip().capitalize()
-
     if topic_match:
         topic = topic_match.group(1).strip()
-
     if explain_match:
         explanation = explain_match.group(1).strip()
 
     return explanation, topic, difficulty
-
 
 def update_question(row_id, explanation, topic, difficulty):
     payload = {
@@ -205,13 +214,22 @@ def update_question(row_id, explanation, topic, difficulty):
     else:
         print(f"❌ Failed to update row {row_id}: {r.text}")
 
+def delete_question(row_id):
+    r = requests.delete(
+        f"{SUPABASE_URL}/rest/v1/alevel_math_questions?id=eq.{row_id}",
+        headers=db_headers
+    )
+    if r.status_code in [200, 204]:
+        print(f"🗑️ Deleted extra page row {row_id}")
+    else:
+        print(f"❌ Failed to delete row {row_id}: {r.text}")
+
 # === Main Execution ===
 questions = fetch_unprocessed_questions()
 grouped = defaultdict(list)
 for q in questions:
     grouped[q["component"]].append(q)
 
-# === Process each subject ===
 for component, subject_questions in grouped.items():
     if component not in component_prompts:
         print(f"⚠️ No prompt defined for: {component}, skipping...")
@@ -243,12 +261,15 @@ for component, subject_questions in grouped.items():
             raw_text = response.text
             explanation, topic, difficulty = extract_fields(raw_text)
 
+            if explanation == "extra page":
+                delete_question(q_id)
+                continue
+
             if explanation:
                 update_question(q_id, explanation, topic, difficulty)
             else:
                 print(f"⚠️ Could not extract fields for row {q_id}")
 
-            # Cost tracking
             question_cost = len(image_data) * COST_PER_IMAGE_USD
             total_cost += question_cost
             print(f"💵 Cost for Q{q['question_number']}: ${question_cost:.4f}")
