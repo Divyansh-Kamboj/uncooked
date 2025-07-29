@@ -1,0 +1,344 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Uncooked 🔥 Design System - Orange theme with beautiful gradients and animations */
+
+@layer base {
+  :root {
+    /* Core orange theme based on #ff9600 */
+    --background: 30 100% 50%; /* #ff9600 converted to HSL */
+    --foreground: 0 0% 98%; /* Near white for excellent contrast */
+
+    --card: 33 95% 45%; /* Slightly darker orange for cards */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 28 100% 55%; /* Brighter orange for popovers */
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary uses darker contrast colors */
+    --primary: 220 13% 18%; /* Dark blue-grey for buttons */
+    --primary-foreground: 0 0% 98%;
+
+    /* Secondary uses complementary dark tones */
+    --secondary: 215 25% 27%; /* Medium dark blue-grey */
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted tones for subtle elements */
+    --muted: 25 80% 65%; /* Lighter orange */
+    --muted-foreground: 220 13% 18%;
+
+    /* Accent uses the fire energy colors */
+    --accent: 15 100% 60%; /* Red-orange for fire effects */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* UI elements with orange theme */
+    --border: 25 60% 75%;
+    --input: 25 60% 75%;
+    --ring: 220 13% 18%;
+
+    --radius: 0.75rem;
+    
+    /* Custom fire animation colors */
+    --fire-primary: 15 100% 60%; /* Red-orange */
+    --fire-secondary: 39 100% 50%; /* Yellow-orange */
+    --fire-glow: 30 100% 70%; /* Bright orange glow */
+    
+    /* Button hover effects */
+    --button-hover: 220 15% 25%;
+    --button-shadow: 220 13% 18% / 0.3;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    outline: none !important;
+  }
+
+  body {
+    @apply bg-background text-foreground font-poppins;
+  }
+}
+
+@layer components {
+  /* Fire emoji animation */
+  .fire-flicker {
+    display: inline-block;
+    animation: fireFlicker 2s ease-in-out infinite alternate;
+  }
+  
+  .fire-glow {
+    filter: drop-shadow(0 0 8px hsl(var(--fire-glow))) 
+            drop-shadow(0 0 16px hsl(var(--fire-primary)));
+  }
+  
+  /* Clickable text styles */
+  .click-to-start {
+    @apply text-lg md:text-xl font-semibold text-foreground cursor-pointer;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:text-foreground/70 hover:scale-105;
+    @apply relative inline-block;
+  }
+  
+  .click-to-start::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-foreground;
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .click-to-start:hover::after {
+    @apply w-full bg-foreground/70;
+  }
+  
+  /* Responsive typography */
+  .hero-title {
+    @apply text-6xl md:text-7xl lg:text-8xl font-bold text-foreground;
+    @apply leading-tight tracking-tight;
+  }
+  
+  .hero-tagline {
+    @apply text-lg md:text-xl lg:text-2xl font-medium text-foreground/90;
+    @apply leading-relaxed;
+  }
+  
+  /* Auth page styles */
+  .auth-container {
+    @apply bg-white rounded-2xl shadow-2xl p-8 md:p-10;
+    @apply border border-white/20;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .auth-title {
+    @apply text-3xl md:text-4xl font-bold text-gray-900;
+    @apply leading-tight tracking-tight;
+  }
+  
+  .auth-subtitle {
+    @apply text-gray-600 mt-2 text-base;
+  }
+  
+  .auth-label {
+    @apply text-sm font-medium text-gray-700;
+  }
+  
+  .auth-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg;
+    @apply bg-gray-100 text-gray-900;
+    @apply transition-all duration-200;
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+  }
+  
+  .auth-input:focus {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    border-color: hsl(var(--accent)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--accent) / 0.2) !important;
+    outline: none !important;
+  }
+  
+  .auth-input:focus {
+    @apply shadow-sm;
+  }
+  
+  .auth-checkbox-label {
+    @apply text-sm text-gray-600 cursor-pointer;
+  }
+  
+  .auth-forgot-link {
+    @apply text-sm text-orange-600 hover:text-orange-700;
+    @apply transition-colors duration-200;
+  }
+  
+  .auth-button {
+    @apply bg-accent bg-accent/90 text-accent-foreground;
+    @apply px-6 py-3 rounded-lg font-semibold;
+    @apply transition-all duration-200;
+    @apply shadow-lg hover:shadow-xl;
+  }
+  
+  .auth-separator {
+    @apply flex items-center;
+  }
+  
+  .auth-google-button {
+    @apply bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-300;
+    @apply px-6 py-3 rounded-lg font-medium;
+    @apply transition-all duration-200;
+    @apply shadow-sm hover:shadow-md;
+  }
+  
+  .auth-toggle-text {
+    @apply text-gray-600 text-sm;
+  }
+  
+  .auth-toggle-link {
+    @apply text-orange-600 hover:text-orange-700 font-medium;
+    @apply transition-colors duration-200;
+  }
+  
+  /* Custom checkbox styling for orange background when checked */
+  .auth-checkbox button[data-state="checked"] {
+    background-color: hsl(var(--accent)) !important;
+    border-color: hsl(var(--accent)) !important;
+    border-radius: 50% !important;
+  }
+  
+  /* Make checkbox perfectly round by default */
+  .auth-checkbox button[role="checkbox"] {
+    border-radius: 50% !important;
+  }
+  
+  /* Ensure checkmark icon fits properly in circle */
+  .auth-checkbox button[data-state="checked"] svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+@keyframes fireFlicker {
+  0% {
+    transform: rotate(-1deg) scale(1);
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  25% {
+    transform: rotate(1deg) scale(1.05);
+    filter: hue-rotate(5deg) brightness(1.1);
+  }
+  50% {
+    transform: rotate(-0.5deg) scale(1.02);
+    filter: hue-rotate(-3deg) brightness(0.95);
+  }
+  75% {
+    transform: rotate(1.5deg) scale(1.08);
+    filter: hue-rotate(8deg) brightness(1.15);
+  }
+  100% {
+    transform: rotate(-1deg) scale(1.03);
+    filter: hue-rotate(2deg) brightness(1.05);
+  }
+}
+
+/* Pricing Page Styles */
+.pricing-card {
+  @apply p-8 rounded-2xl border shadow-lg;
+  background-color: #fdfdfd;
+  border-color: #cc7a00;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pricing-card-default {
+  @apply hover:shadow-xl;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.pricing-card-default:hover {
+  transform: translateY(-4px);
+  border-color: #cc7a00;
+  box-shadow: 0 20px 40px -12px rgba(204, 122, 0, 0.25);
+}
+
+.pricing-card-selected {
+  border-width: 3px;
+  border-color: hsl(var(--accent));
+  background-color: #ffe0b2;
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(255, 150, 0, 0.3);
+}
+
+.pricing-card-highlighted {
+  position: relative;
+}
+
+.pricing-price {
+  @apply text-3xl md:text-4xl font-bold;
+  color: #333333;
+}
+
+.pricing-choose-button {
+  @apply px-8 py-4 text-lg font-semibold rounded-lg;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply transition-transform duration-200 ease-out;
+  background-color: #333333;
+  color: #fdfdfd;
+  min-width: 200px;
+}
+
+.pricing-choose-button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+
+.pricing-choose-button:disabled {
+  background-color: #666666;
+}
+
+/* Hide scrollbar for horizontal scrolling in multiselect */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
