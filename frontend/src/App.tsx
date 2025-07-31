@@ -36,12 +36,8 @@ const AppContent = () => {
       // Not authenticated and trying to access protected route
       navigate('/signin');
     } else if (session && location.pathname === '/signin') {
-      // Authenticated user on signin page
-      if (profile?.plan === 'basic') {
-        navigate('/pricing');
-      } else {
-        navigate('/dashboard');
-      }
+      // Authenticated user on signin page - default to dashboard
+      navigate('/dashboard');
     }
   }, [session, profile, location.pathname, navigate, loading]);
 

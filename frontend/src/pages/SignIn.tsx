@@ -131,7 +131,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-6 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-orange-500 px-6 py-8">
       <button
         onClick={() => navigate("/")}
         className="absolute top-6 left-6 text-foreground/70 hover:text-foreground transition-colors"
@@ -140,9 +140,9 @@ const SignIn = () => {
       </button>
 
       <div className="w-full max-w-md">
-        <div className="p-8 bg-card rounded-lg shadow-lg">
+        <div className="p-8 bg-white rounded-lg shadow-lg">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-3xl font-bold text-black">
               {isSignUp ? "Sign Up" : "Sign In"}
             </h1>
             <p className="text-muted-foreground mt-2">
@@ -152,7 +152,7 @@ const SignIn = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-black">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -160,11 +160,12 @@ const SignIn = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="bg-gray-100 border border-gray-300 focus:border-orange-500 focus:ring-orange-500 shadow-none outline-none ring-0"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-black">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -173,6 +174,7 @@ const SignIn = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="bg-gray-100 border border-gray-300 focus:border-orange-500 focus:ring-orange-500 shadow-none outline-none ring-0 pr-10"
                 />
                 <button
                   type="button"
@@ -186,7 +188,7 @@ const SignIn = () => {
 
             {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-black">Confirm Password</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -195,6 +197,7 @@ const SignIn = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    className="bg-gray-100 border border-gray-300 focus:border-orange-500 focus:ring-orange-500 shadow-none outline-none ring-0 pr-10"
                   />
                   <button
                     type="button"
@@ -207,11 +210,16 @@ const SignIn = () => {
               </div>
             )}
 
+            {/* Remember me and Forgot password row */}
             {!isSignUp && (
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 text-sm text-black select-none">
+                  <input type="checkbox" className="accent-white checked:bg-orange-500 rounded" />
+                  Remember me
+                </label>
                 <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
                   <DialogTrigger asChild>
-                    <button type="button" className="text-sm text-primary hover:underline">
+                    <button type="button" className="text-sm text-orange-500 hover:underline">
                       Forgot password?
                     </button>
                   </DialogTrigger>
@@ -288,14 +296,13 @@ const SignIn = () => {
             </Button>
 
             <div className="text-center">
+              <span className="text-sm text-muted-foreground">Don't have an account? </span>
               <button
                 type="button"
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="text-sm text-primary hover:underline"
+                className="text-sm text-orange-500 hover:underline font-medium"
               >
-                {isSignUp
-                  ? "Already have an account? Sign in"
-                  : "Don't have an account? Sign up"}
+                Sign up
               </button>
             </div>
           </form>

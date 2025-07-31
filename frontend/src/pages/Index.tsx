@@ -13,17 +13,8 @@ const Index = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        // Fetch user plan
-        supabase
-          .from('profiles')
-          .select('plan')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            if (profile) {
-              setUserPlan(profile.plan);
-            }
-          });
+        // Mock user plan - no backend functionality
+        setUserPlan('basic');
       }
     });
   }, []);

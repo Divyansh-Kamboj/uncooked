@@ -28,22 +28,14 @@ const Account = () => {
         
         setUser(user);
         
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching profile:', error);
-          toast({
-            title: "Error",
-            description: "Failed to load profile data",
-            variant: "destructive",
-          });
-        } else {
-          setProfile(profileData);
-        }
+        // Mock profile data - no backend functionality
+        const mockProfile = {
+          id: user.id,
+          email: user.email,
+          plan: 'basic',
+          created_at: '2024-01-15'
+        };
+        setProfile(mockProfile);
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -92,7 +84,7 @@ const Account = () => {
         </div>
 
         {/* Profile Card */}
-        <Card className="bg-white/80 backdrop-blur-sm border-orange-200 shadow-lg">
+        <Card className="bg-white backdrop-blur-sm border-orange-200 shadow-lg">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               <div className="h-20 w-20 rounded-full bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-200 flex items-center justify-center">
@@ -114,7 +106,7 @@ const Account = () => {
                 type="email"
                 value={user?.email || profile?.email || ''}
                 disabled
-                className="bg-gray-50 border-orange-200"
+                className="bg-gray-100 border border-gray-300"
               />
             </div>
 
@@ -127,7 +119,7 @@ const Account = () => {
                   type={showPassword ? "text" : "password"}
                   value={showPassword ? "your-actual-password" : "••••••••••••"}
                   disabled
-                  className="bg-gray-50 border-orange-200 pr-10"
+                  className="bg-gray-100 border border-gray-300 pr-10"
                 />
                 <Button
                   type="button"
@@ -176,7 +168,7 @@ const Account = () => {
               <Input
                 value={profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
                 disabled
-                className="bg-gray-50 border-orange-200"
+                className="bg-gray-100 border border-gray-300"
               />
             </div>
 
@@ -185,7 +177,7 @@ const Account = () => {
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
               >
                 Sign Out
               </Button>

@@ -80,21 +80,8 @@ const Pricing = () => {
         return;
       }
 
-      // Update user's plan in the database
-      const { error } = await supabase
-        .from('profiles')
-        .update({ plan: selectedPlan })
-        .eq('id', user.id);
-
-      if (error) {
-        console.error('Error updating plan:', error);
-        toast({
-          title: "Failed to update plan",
-          description: "Please try again later.",
-          variant: "destructive",
-        });
-        return;
-      }
+      // Mock plan update - no backend functionality
+      console.log('Plan update simulated:', selectedPlan);
 
       toast({
         title: "Plan updated successfully!",

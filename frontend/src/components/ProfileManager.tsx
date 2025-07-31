@@ -1,4 +1,4 @@
-// Step 3: Separate Profile Management Component
+// Simplified Profile Manager (No Backend - Profiles Table Removed)
 import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
@@ -8,27 +8,23 @@ interface ProfileManagerProps {
 }
 
 export const ProfileManager = ({ children }: ProfileManagerProps) => {
-  const { user, showError, showSuccess } = useAuth();
+  const { user } = useAuth();
   const { profile, createProfile } = useProfile();
 
   useEffect(() => {
-    // Auto-create profile for new users
+    // Auto-create mock profile for new users
     if (user && !profile) {
       const createUserProfile = async () => {
         try {
-          const newProfile = await createProfile(user.id, user.email || '');
-          if (newProfile) {
-            showSuccess('Welcome to Uncooked!', 'Your profile has been created.');
-          }
+          await createProfile(user.id, user.email || '');
         } catch (error) {
           console.error('Failed to create profile:', error);
-          showError('Profile Creation Failed', 'Unable to create your profile. Please try again.');
         }
       };
 
       createUserProfile();
     }
-  }, [user, profile, createProfile, showError, showSuccess]);
+  }, [user, profile, createProfile]);
 
   return <>{children}</>;
 };
