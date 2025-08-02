@@ -5,59 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { User, ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+// profile is of type Database["public"]["Tables"]["users"]["Row"] | null
 
 const Account = () => {
-  const [user, setUser] = useState<import('@supabase/supabase-js').User | null>(null);
-  const [profile, setProfile] = useState<{ id: string; email: string | null; plan: string; created_at: string } | null>(null);
+  const { user, profile, signOut, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          navigate('/signin');
-          return;
-        }
-        
-        setUser(user);
-        
-        // Mock profile data - no backend functionality
-        const mockProfile = {
-          id: user.id,
-          email: user.email,
-          plan: 'basic',
-          created_at: '2024-01-15'
-        };
-        setProfile(mockProfile);
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getProfile();
-  }, [navigate, toast]);
-
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out",
-        variant: "destructive",
-      });
-    } else {
-      navigate('/');
-    }
-  };
 
   if (loading) {
     return (
@@ -141,15 +99,15 @@ const Account = () => {
               <Label className="text-orange-800 font-medium">Current Plan</Label>
               <div className="flex items-center space-x-2">
                 <Badge 
-                  variant={profile?.plan === 'premium' ? 'default' : 'secondary'}
-                  className={profile?.plan === 'premium' 
+                  variant={profile?.plan === 'uncooked' ? 'default' : 'secondary'}
+                  className={profile?.plan === 'uncooked' 
                     ? 'bg-orange-600 text-white' 
                     : 'bg-orange-100 text-orange-800'
                   }
                 >
                   {profile?.plan ? profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1) : 'Free'}
                 </Badge>
-                {profile?.plan !== 'premium' && (
+                {profile?.plan !== 'uncooked' && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -159,6 +117,12 @@ const Account = () => {
                     Upgrade Plan
                   </Button>
                 )}
+              </div>
+              <div className="mt-2">
+                <Label className="text-orange-800 font-medium">Paid</Label>
+                <Badge className={profile?.paid ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 ml-2'}>
+                  {profile?.paid ? 'Yes' : 'No'}
+                </Badge>
               </div>
             </div>
 
@@ -175,7 +139,7 @@ const Account = () => {
             {/* Sign Out Button */}
             <div className="pt-4 border-t border-orange-200">
               <Button
-                onClick={handleSignOut}
+                onClick={signOut}
                 variant="outline"
                 className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
               >

@@ -1,13 +1,15 @@
 // Step 2: Streamlined SignIn.tsx
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import type { Database } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+// profile is of type Database["public"]["Tables"]["users"]["Row"] | null
 import { Eye, EyeOff } from "lucide-react";
 
 const SignIn = () => {

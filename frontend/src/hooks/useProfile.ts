@@ -8,7 +8,10 @@ interface Profile {
   created_at: string;
 }
 
-export const useProfile = () => {
+// DEPRECATED: All profile logic is now managed by AuthContext and Supabase types.
+// This hook is obsolete and should not be used anywhere in the codebase.
+// Remove any imports or usage of useProfile throughout the project.
+
   const [profile, setProfile] = useState<Profile | null>({
     id: '1',
     email: 'user@example.com',

@@ -3,10 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+// profile is of type Database["public"]["Tables"]["users"]["Row"] | null
 
-type PlanType = 'basic' | 'nerd' | 'uncooked' | null;
+// Allowed plan values per Supabase schema: 'uncooked', 'nerd', or null (free user)
+type PlanType = 'nerd' | 'uncooked' | null; // null means free plan
 
 const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<PlanType>(null);
@@ -25,8 +29,8 @@ const Pricing = () => {
 
   const plans = [
     {
-      id: 'basic' as const,
-      name: 'Basic',
+      id: null as PlanType,
+      name: 'Free',
       price: 'Free',
       features: [
         '10 questions a day',
@@ -61,15 +65,12 @@ const Pricing = () => {
     setSelectedPlan(planId);
   };
 
+  const { user, refreshProfile } = useAuth();
+
   const handleChoosePlan = async () => {
     if (!selectedPlan) return;
-    
     setLoading(true);
-    
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast({
           title: "Authentication required",
@@ -79,19 +80,20 @@ const Pricing = () => {
         navigate('/signin');
         return;
       }
-
-      // Mock plan update - no backend functionality
-      console.log('Plan update simulated:', selectedPlan);
-
-      toast({
-        title: "Plan updated successfully!",
-        description: `You are now on the ${selectedPlan} plan.`,
-      });
-
-      // Small delay to ensure database update is processed before navigation
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 100);
+      if (selectedPlan === null) {
+        // For free plan: updates users table with plan: null and paid: false, refreshes profile, redirects to /dashboard
+        await supabase.from('users').update({ plan: null, paid: false }).eq('id', user.id);
+        await refreshProfile();
+        toast({
+          title: "Plan updated successfully!",
+          description: `You are now on the Free plan.`,
+        });
+        setTimeout(() => navigate('/dashboard'), 100);
+      } else {
+        // Paid plan: save selection and redirect to payment
+        localStorage.setItem('selectedPlan', selectedPlan);
+        navigate('/payment');
+      }
     } catch (error) {
       console.error('Unexpected error:', error);
       toast({
