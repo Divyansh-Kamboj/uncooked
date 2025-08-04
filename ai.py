@@ -160,7 +160,7 @@ for component, subject_questions in grouped.items():
         continue
 
     print(f"\n📘 Starting chat session for: {component} ({len(subject_questions)} questions)")
-    model = genai.GenerativeModel("gemini-pro-vision")
+    model = genai.GenerativeModel("gemini-1.5-pro")
     chat = model.start_chat()
     chat.send_message(component_prompts[component])
 
