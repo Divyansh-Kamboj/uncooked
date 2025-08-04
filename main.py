@@ -5,12 +5,13 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env
+load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
+PAPER_DIR = "papers"
 app = FastAPI()
 
 def upload_to_supabase_storage(image_bytes, filename):
@@ -23,9 +24,9 @@ def upload_to_supabase_storage(image_bytes, filename):
     r = requests.put(upload_url, headers=storage_headers, data=image_bytes)
 
     if r.status_code != 200:
-        print(f"Image upload failed for {filename}: {r.text}")
+        print(f"❌ Image upload failed for {filename}: {r.text}")
         return None
-    
+
     return f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{filename}"
 
 def upload_metadata_to_supabase(metadata):
@@ -43,21 +44,42 @@ def upload_metadata_to_supabase(metadata):
     )
 
     if r.status_code not in [200, 201]:
-        print(f"Metadata upload failed for Q{metadata['question_number']}: {r.text}")
+        print(f"❌ Metadata upload failed for Q{metadata['question_number']}: {r.text}")
     else:
-        print(f"Uploaded Q{metadata['question_number']}")
+        print(f"✅ Uploaded Q{metadata['question_number']}")
 
-@app.get("/upload")
-def upload_pdf():
-    exam_paper = "9709_S24_32.pdf"
-    doc = fitz.open(exam_paper)
+@app.get("/upload-all")
+def upload_all_pdfs():
+    pdf_files = [f for f in os.listdir(PAPER_DIR) if f.endswith(".pdf")]
+    for exam_paper in pdf_files:
+        process_paper(os.path.join(PAPER_DIR, exam_paper))
+    return {"message": "✅ All PDFs processed and uploaded."}
 
-    session = {"S": "May/June", "W": "October/November", "M": "February/March"}.get(exam_paper[5], "Unknown")
-    year = {"5": "2025", "4": "2024", "3": "2023", "2": "2022", "1": "2021", "0": "2020"}.get(exam_paper[7], "Unknown")
-    component = {"1": "Pure 1", "3": "Pure 3", "4": "Mechanics", "5": "Stats 1", "6": "Stats 2"}.get(exam_paper[9], "Unknown")
-    paper_code = exam_paper[-5]  # 2 in "9709_S24_32.pdf"
+def process_paper(filepath):
+    exam_paper = os.path.basename(filepath)
+    print(f"\n📄 Processing {exam_paper}...")
 
-    print(f"📄 Processing: {component}_{session}_{year}_P{paper_code}")
+    doc = fitz.open(filepath)
+
+    # match pattern like: 9709_m23_qp_12.pdf
+    match = re.match(r"9709_([msw])(\d\d)_qp_(\d)(\d)\.pdf", exam_paper, re.IGNORECASE)
+    if not match:
+        print(f"❌ Filename format not recognized: {exam_paper}")
+        return
+
+    session_code, year_suffix, component_code, paper_code = match.groups()
+    session = {"m": "Feb/March", "s": "May/June", "w": "Oct/Nov"}.get(session_code.lower(), "Unknown")
+    year = f"20{year_suffix}"
+    component = {
+        "1": "Pure 1",
+        "2": "Pure 2",  # optional — if you ever add this
+        "3": "Pure 3",
+        "4": "Mechanics",
+        "5": "Stats 1",
+        "6": "Stats 2"
+    }.get(component_code, "Unknown")
+
+    print(f"📄 {component}_{session}_{year}_P{paper_code}")
 
     question_index = 1
     current_question = str(question_index)
@@ -90,12 +112,11 @@ def upload_pdf():
         public_url = upload_to_supabase_storage(img_bytes, filename)
 
         if not public_url:
-            print(f"Skipping metadata for Q{current_question}")
+            print(f"❌ Skipping metadata for Q{current_question}")
             continue
 
         question_img_map.setdefault(current_question, []).append(public_url)
 
-    # Upload metadata after all pages processed
     for question_num, img_links in question_img_map.items():
         metadata = {
             "question_number": question_num,
@@ -103,12 +124,10 @@ def upload_pdf():
             "paper_year": year,
             "session": session,
             "component": component,
-            "question_img": img_links,  # list of links
+            "question_img": img_links,
             "topic": None,
             "answer_img": None,
             "difficulty": None,
             "ai_explanation": None
         }
         upload_metadata_to_supabase(metadata)
-
-    return {"message": "Upload process complete"}

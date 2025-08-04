@@ -1,4 +1,6 @@
 import os
+import json
+import re
 import requests
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -17,81 +19,136 @@ total_cost = 0
 
 # === Subject-Specific Prompts ===
 component_prompts = {
-    "Pure 1": """You're an expert tutor for Cambridge A Level Mathematics, Pure Mathematics 1 (Paper 1). Use the following topics:
+    "Pure 1": """You are an expert tutor for Cambridge A Level Mathematics, Pure Mathematics 1 (Paper 1).
 
-1.1 Quadratics
-1.2 Functions
-1.3 Coordinate geometry
-1.4 Circular measure
-1.5 Trigonometry
-1.6 Series
-1.7 Differentiation
-1.8 Integration
+ONLY use the following list of topics to choose from:
+Quadratics  
+Functions  
+Coordinate geometry  
+Circular measure  
+Trigonometry  
+Series  
+Differentiation  
+Integration  
 
-Respond in this exact format:
-difficulty = "Easy" or "Medium" or "Hard"
-topic = "<topic from the syllabus above>"
-ai_explanation = "<step-by-step explanation in a single string>"
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
+
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>  
+ai_explanation = <step-by-step explanation in plain text>
+
+STRICT RULES:  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
-    "Pure 3": """You're an expert tutor for Cambridge A Level Mathematics, Pure Mathematics 3 (Paper 3). Use the following topics:
+    "Pure 3": """You are an expert tutor for Cambridge A Level Mathematics, Pure Mathematics 3 (Paper 3).
 
-3.1 Algebra
-3.2 Logarithmic and exponential functions
-3.3 Trigonometry
-3.4 Differentiation
-3.5 Integration
-3.6 Numerical solution of equations
-3.7 Vectors
-3.8 Differential equations
-3.9 Complex numbers
+ONLY use the following list of topics to choose from:
+Algebra  
+Logarithmic and exponential functions  
+Trigonometry  
+Differentiation  
+Integration  
+Numerical solution of equations  
+Vectors  
+Differential equations  
+Complex numbers  
 
-Respond in this exact format:
-difficulty = "Easy" or "Medium" or "Hard"
-topic = "<topic from the syllabus above>"
-ai_explanation = "<step-by-step explanation in a single string>"
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
+
+difficulty = <Easy | Medium | Hard>
+topic = <exact topic name from the list above>
+ai_explanation = <step-by-step explanation in plain text>
+
+STRICT RULES:  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
-    "Mechanics": """You're an expert tutor for Cambridge A Level Mathematics, Mechanics (Paper 4). Use the following topics:
+    "Mechanics": """You are an expert tutor for Cambridge A Level Mathematics, Mechanics (Paper 4).
 
-4.1 Forces and equilibrium
-4.2 Kinematics of motion in a straight line
-4.3 Momentum
-4.4 Newton’s laws of motion
-4.5 Energy, work and power
+ONLY use the following list of topics to choose from:
+Forces and equilibrium  
+Kinematics of motion in a straight line  
+Momentum  
+Newton’s laws of motion  
+Energy, work and power  
 
-Respond in this exact format:
-difficulty = "Easy" or "Medium" or "Hard"
-topic = "<topic from the syllabus above>"
-ai_explanation = "<step-by-step explanation in a single string>"
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
+
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>  
+ai_explanation = <step-by-step explanation in plain text>
+
+STRICT RULES:  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
-    "Stats 1": """You're an expert tutor for Cambridge A Level Mathematics, Statistics 1 (Paper 5). Use the following topics:
+    "Stats 1": """You are an expert tutor for Cambridge A Level Mathematics, Statistics 1 (Paper 5).
 
-5.1 Representation of data
-5.2 Permutations and combinations
-5.3 Probability
-5.4 Discrete random variables
-5.5 The normal distribution
+ONLY use the following list of topics to choose from:
+Representation of data  
+Permutations and combinations  
+Probability  
+Discrete random variables  
+The normal distribution  
 
-Respond in this exact format:
-difficulty = "Easy" or "Medium" or "Hard"
-topic = "<topic from the syllabus above>"
-ai_explanation = "<step-by-step explanation in a single string>"
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
+
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>
+ai_explanation = <step-by-step explanation in plain text>
+
+STRICT RULES:  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """,
 
-    "Stats 2": """You're an expert tutor for Cambridge A Level Mathematics, Statistics 2 (Paper 6). Use the following topics:
+    "Stats 2": """You are an expert tutor for Cambridge A Level Mathematics, Statistics 2 (Paper 6).
 
-6.1 The Poisson distribution
-6.2 Linear combinations of random variables
-6.3 Continuous random variables
-6.4 Sampling and estimation
-6.5 Hypothesis tests
+ONLY use the following list of topics to choose from:
+The Poisson distribution  
+Linear combinations of random variables  
+Continuous random variables  
+Sampling and estimation  
+Hypothesis tests  
 
-Respond in this exact format:
-difficulty = "Easy" or "Medium" or "Hard"
-topic = "<topic from the syllabus above>"
-ai_explanation = "<step-by-step explanation in a single string>"
+SPECIAL CASE: If the image is an additional page with dotted lines and no question to answer, simply return:
+extra page
+
+Your response MUST follow this exact format — no markdown, no extra notes, no headings:
+
+difficulty = <Easy | Medium | Hard>  
+topic = <exact topic name from the list above>  
+ai_explanation = <step-by-step explanation in plain text>
+
+STRICT RULES:  
+- Do NOT include any extra lines, greetings, markdown, or commentary.  
+- Do NOT explain what you're doing.  
+- DO NOT change the format or add labels or bullets.  
+- If unsure about the topic, choose the closest matching topic.
 """
 }
 
@@ -121,14 +178,24 @@ def get_image_bytes(url):
         return None
 
 def extract_fields(text):
+    print("\n📤 Raw Gemini response:\n", text, "\n")
+
+    if "extra page" in text.strip().lower():
+        return "extra page", None, None
+
     difficulty = topic = explanation = None
-    for line in text.strip().splitlines():
-        if line.lower().startswith("difficulty"):
-            difficulty = line.split("=", 1)[-1].strip().strip('"')
-        elif line.lower().startswith("topic"):
-            topic = line.split("=", 1)[-1].strip().strip('"')
-        elif line.lower().startswith("ai_explanation"):
-            explanation = line.split("=", 1)[-1].strip().strip('"')
+
+    diff_match = re.search(r'difficulty\s*=\s*(Easy|Medium|Hard)', text, re.IGNORECASE)
+    topic_match = re.search(r'topic\s*=\s*(.+)', text, re.IGNORECASE)
+    explain_match = re.search(r'ai_explanation\s*=\s*(.+)', text, re.IGNORECASE | re.DOTALL)
+
+    if diff_match:
+        difficulty = diff_match.group(1).strip().capitalize()
+    if topic_match:
+        topic = topic_match.group(1).strip()
+    if explain_match:
+        explanation = explain_match.group(1).strip()
+
     return explanation, topic, difficulty
 
 def update_question(row_id, explanation, topic, difficulty):
@@ -147,49 +214,62 @@ def update_question(row_id, explanation, topic, difficulty):
     else:
         print(f"❌ Failed to update row {row_id}: {r.text}")
 
+def delete_question(row_id):
+    r = requests.delete(
+        f"{SUPABASE_URL}/rest/v1/alevel_math_questions?id=eq.{row_id}",
+        headers=db_headers
+    )
+    if r.status_code in [200, 204]:
+        print(f"🗑️ Deleted extra page row {row_id}")
+    else:
+        print(f"❌ Failed to delete row {row_id}: {r.text}")
+
 # === Main Execution ===
 questions = fetch_unprocessed_questions()
 grouped = defaultdict(list)
 for q in questions:
     grouped[q["component"]].append(q)
 
-# === Process each subject ===
 for component, subject_questions in grouped.items():
     if component not in component_prompts:
         print(f"⚠️ No prompt defined for: {component}, skipping...")
         continue
 
     print(f"\n📘 Starting chat session for: {component} ({len(subject_questions)} questions)")
-    model = genai.GenerativeModel("gemini-1.5-pro")
+    model = genai.GenerativeModel("gemini-1.5-flash")
     chat = model.start_chat()
     chat.send_message(component_prompts[component])
 
     for q in subject_questions:
         q_id = q["id"]
-        img_urls = q["question_img"]
+        img_urls = json.loads(q["question_img"]) if isinstance(q["question_img"], str) else q["question_img"]
         print(f"\n🔍 Processing Q{q['question_number']} (row {q_id})")
 
         image_data = []
         for url in img_urls:
-            img = get_image_bytes(url)
-            if img:
-                image_data.append({"mime_type": "image/png", "data": img})
+            if isinstance(url, str) and url.startswith("http"):
+                img = get_image_bytes(url)
+                if img:
+                    image_data.append({"mime_type": "image/png", "data": img})
 
         if not image_data:
-            print("⚠️ No image found, skipping")
+            print("⚠️ No valid images found, skipping...")
             continue
 
         try:
             response = chat.send_message(["Here is a question image for analysis:"] + image_data)
-            text = response.text
-            explanation, topic, difficulty = extract_fields(text)
+            raw_text = response.text
+            explanation, topic, difficulty = extract_fields(raw_text)
+
+            if explanation == "extra page":
+                delete_question(q_id)
+                continue
 
             if explanation:
                 update_question(q_id, explanation, topic, difficulty)
             else:
-                print(f"⚠️ Could not extract explanation for row {q_id}")
+                print(f"⚠️ Could not extract fields for row {q_id}")
 
-            # Cost tracking
             question_cost = len(image_data) * COST_PER_IMAGE_USD
             total_cost += question_cost
             print(f"💵 Cost for Q{q['question_number']}: ${question_cost:.4f}")
