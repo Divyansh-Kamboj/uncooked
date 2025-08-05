@@ -14,6 +14,7 @@ import { EndSession } from "./pages/EndSession";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Payment from "./pages/Payment";
+import SupabaseMinimalSignIn from "./pages/SupabaseMinimalSignIn";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const AppContent = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/account" element={<Account />} />
       <Route path="/payment" element={<Payment />} />
+      <Route path="/supabase-minimal-signin" element={<SupabaseMinimalSignIn />} />
     </Routes>
   );
 };

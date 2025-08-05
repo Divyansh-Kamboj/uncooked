@@ -31,16 +31,20 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log('[SignIn] handleSubmit called. isSignUp:', isSignUp, 'email:', email);
+
 
     try {
       // Validation
       if (isSignUp && password !== confirmPassword) {
         showError("Passwords don't match", "Please make sure both passwords are identical.");
+        setLoading(false);
         return;
       }
 
       if (password.length < 6) {
         showError("Password too short", "Password must be at least 6 characters long.");
+        setLoading(false);
         return;
       }
 
@@ -57,28 +61,42 @@ const SignIn = () => {
         if (error) {
           if (error.message.includes("User already registered")) {
             showError("Account already exists", "This email is already registered. Try signing in instead.");
+            console.log('[SignIn] Sign up error:', error.message);
           } else {
             showError("Sign up failed", error.message);
+            console.log('[SignIn] Sign up error:', error.message);
           }
         } else if (data.user) {
           showSuccess("Sign up successful", "Please check your email to confirm your account.");
+          console.log('[SignIn] Sign up successful:', data.user);
         }
       } else {
         // Sign in
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-        if (error) {
-          showError("Sign in failed", error.message);
+        console.log('[SignIn] Attempting signInWithPassword');
+        try {
+          const result = await supabase.auth.signInWithPassword({ email, password });
+          console.log('[SignIn] signInWithPassword result:', result);
+          if (result.error) {
+            showError("Sign in failed", result.error.message);
+            console.log('[SignIn] Sign in failed:', result.error.message);
+          } else {
+            console.log('[SignIn] Sign in succeeded');
+          }
+        } catch (err) {
+          console.error('[SignIn] signInWithPassword threw:', err);
+          showError("Sign in error", err instanceof Error ? err.message : String(err));
         }
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       showError("An unexpected error occurred", errorMessage);
-      console.error("Auth error:", error);
+      console.error("[SignIn] Auth error:", error);
     } finally {
       setLoading(false);
+      console.log('[SignIn] Loading set to false in finally');
     }
   };
+
 
   const handleGoogleSignIn = async () => {
     setLoading(true);

@@ -42,6 +42,9 @@ export const useQuestions = ({ filters, paperLoaded }: UseQuestionsProps) => {
       setLoading(true);
       setError(null);
 
+      // DEBUG LOG: Show filters
+      console.log("[useQuestions] Filters sent to query:", filters);
+
       try {
         let query = supabase
           .from('alevel_math_questions')
@@ -62,6 +65,10 @@ export const useQuestions = ({ filters, paperLoaded }: UseQuestionsProps) => {
         }
 
         const { data, error: queryError } = await query.order('question_number');
+
+        // DEBUG LOG: Show returned data and error
+        console.log("[useQuestions] Supabase data:", data);
+        console.log("[useQuestions] Supabase error:", queryError);
 
         if (queryError) throw queryError;
 

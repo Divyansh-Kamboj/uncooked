@@ -56,8 +56,9 @@ const ensureUserProfile = async (user: User) => {
   }
 };
 
-const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('[AuthContext] fetchUserProfile called for userId:', userId);
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -71,21 +72,24 @@ const fetchUserProfile = async (userId: string) => {
         paid: data.paid,
         created_at: data.created_at,
       });
+      console.log('[AuthContext] Profile set:', data);
       // Redirect logic based on plan status
       if (location.pathname === '/' && data.plan) {
+        console.log('[AuthContext] Navigating to /dashboard');
         navigate('/dashboard', { replace: true });
       } else if (location.pathname === '/' && !data.plan) {
+        console.log('[AuthContext] Navigating to /pricing');
         navigate('/pricing', { replace: true });
       } else if (location.pathname === '/pricing' && data.plan) {
+        console.log('[AuthContext] Navigating to /dashboard');
         navigate('/dashboard', { replace: true });
       } else if (location.pathname === '/dashboard' && !data.plan) {
         navigate('/pricing', { replace: true });
       }
       return data;
     } catch (error: any) {
-      setProfile(null);
-      showError(error?.message || "Failed to fetch user profile");
-      return null;
+      showError("Failed to fetch profile", error.message);
+      console.log('[AuthContext] fetchUserProfile error:', error.message);
     }
   };
 
@@ -96,16 +100,31 @@ const fetchUserProfile = async (userId: string) => {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const getSession = async () => {
+      setLoading(true);
+      console.log('[AuthContext] getSession called');
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        setLoading(false);
+        showError("Failed to get session", error.message);
+        console.log('[AuthContext] getSession error:', error.message);
+        return;
+      }
+      const session = data.session;
       setSession(session);
-      setUser(session?.user ?? null);
+      console.log('[AuthContext] Session set:', session);
       if (session?.user) {
         await ensureUserProfile(session.user);
-        fetchUserProfile(session.user.id);
-      } else {
-        setLoading(false);
+        await fetchUserProfile(session.user.id);
       }
-    });
+      setLoading(false);
+      console.log('[AuthContext] getSession loading set to false');
+    };
+    getSession();
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
