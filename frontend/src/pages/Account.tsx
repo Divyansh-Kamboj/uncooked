@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useUser, useClerk } from "@clerk/clerk-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,17 +9,27 @@ import { Badge } from "@/components/ui/badge";
 import { User, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import type { Database } from "@/integrations/supabase/types";
-import { useAuth } from "@/contexts/AuthContext";
-// profile is of type Database["public"]["Tables"]["users"]["Row"] | null
 
 const Account = () => {
-  const { user, profile, signOut, loading } = useAuth();
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const [plan, setPlan] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  if (loading) {
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from("users")
+        .select("plan")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => setPlan(data?.plan || null));
+    }
+  }, [user]);
+
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
         <div className="text-xl text-orange-700">Loading...</div>
@@ -41,7 +53,7 @@ const Account = () => {
           <h1 className="text-3xl font-bold text-orange-800">My Account</h1>
         </div>
 
-        {/* Profile Card */}
+        {/* P Card */}
         <Card className="bg-white backdrop-blur-sm border-orange-200 shadow-lg">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
@@ -49,7 +61,7 @@ const Account = () => {
                 <User className="h-10 w-10 text-orange-700" />
               </div>
             </div>
-            <CardTitle className="text-2xl text-orange-800">Profile Details</CardTitle>
+            <CardTitle className="text-2xl text-orange-800">P Details</CardTitle>
             <CardDescription className="text-orange-600">
               Manage your account information
             </CardDescription>
@@ -62,7 +74,7 @@ const Account = () => {
               <Input
                 id="email"
                 type="email"
-                value={user?.email || profile?.email || ''}
+                value={user?.primaryEmailAddress?.emailAddress || ''}
                 disabled
                 className="bg-gray-100 border border-gray-300"
               />
@@ -90,7 +102,7 @@ const Account = () => {
                 </Button>
               </div>
               <p className="text-sm text-orange-600">
-                Password is securely stored and cannot be displayed
+                Password cannot be displayed
               </p>
             </div>
 
@@ -98,48 +110,35 @@ const Account = () => {
             <div className="space-y-2">
               <Label className="text-orange-800 font-medium">Current Plan</Label>
               <div className="flex items-center space-x-2">
-                <Badge 
-                  variant={profile?.plan === 'uncooked' ? 'default' : 'secondary'}
-                  className={profile?.plan === 'uncooked' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-orange-100 text-orange-800'
-                  }
-                >
-                  {profile?.plan ? profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1) : 'Free'}
-                </Badge>
-                {profile?.plan !== 'uncooked' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/pricing')}
-                    className="border-orange-300 text-orange-700 hover:bg-orange-50"
-                  >
-                    Upgrade Plan
-                  </Button>
-                )}
+                <Badge
+  variant={plan === 'uncooked' ? 'default' : 'secondary'}
+  className={plan === 'uncooked'
+    ? 'bg-orange-600 text-white'
+    : 'bg-orange-100 text-orange-800'}
+>
+  {plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'Free'}
+</Badge>
+{plan !== 'uncooked' && (
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={() => navigate('/pricing')}
+    className="border-orange-300 text-orange-700 hover:bg-orange-50"
+  >
+    Upgrade Plan
+  </Button>
+)}
               </div>
-              <div className="mt-2">
-                <Label className="text-orange-800 font-medium">Paid</Label>
-                <Badge className={profile?.paid ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 ml-2'}>
-                  {profile?.paid ? 'Yes' : 'No'}
-                </Badge>
-              </div>
+              {/* Paid status removed: Add back if you fetch it from Supabase */}
             </div>
 
             {/* Member Since */}
-            <div className="space-y-2">
-              <Label className="text-orange-800 font-medium">Member Since</Label>
-              <Input
-                value={profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
-                disabled
-                className="bg-gray-100 border border-gray-300"
-              />
-            </div>
+            {/* Member Since removed: Add back if you fetch it from Supabase */}
 
             {/* Sign Out Button */}
             <div className="pt-4 border-t border-orange-200">
               <Button
-                onClick={signOut}
+                onClick={() => signOut()}
                 variant="outline"
                 className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
               >

@@ -1,29 +1,39 @@
 import { useState, useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
-import { useAuth } from "@/contexts/AuthContext";
+
+
 // profile is of type Database["public"]["Tables"]["users"]["Row"] | null
 
 // Allowed plan values per Supabase schema: 'uncooked', 'nerd', or null (free user)
 type PlanType = 'nerd' | 'uncooked' | null; // null means free plan
 
 const Pricing = () => {
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const [selectedPlan, setSelectedPlan] = useState<PlanType>(null);
   const [showPriceAnimation, setShowPriceAnimation] = useState(true);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+
+  useEffect(() => {
+    // Redirect to signin if not signed in
+    if (!user) {
+      navigate('/signin', { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPriceAnimation(false);
     }, 800);
-    
     return () => clearTimeout(timer);
   }, []);
 
@@ -65,7 +75,7 @@ const Pricing = () => {
     setSelectedPlan(planId);
   };
 
-  const { user, refreshProfile } = useAuth();
+  // Clerk user already obtained above
 
   const handleChoosePlan = async () => {
     if (!selectedPlan) return;
@@ -81,14 +91,22 @@ const Pricing = () => {
         return;
       }
       if (selectedPlan === null) {
-        // For free plan: updates users table with plan: null and paid: false, refreshes profile, redirects to /dashboard
-        await supabase.from('users').update({ plan: null, paid: false }).eq('id', user.id);
-        await refreshProfile();
-        toast({
-          title: "Plan updated successfully!",
-          description: `You are now on the Free plan.`,
-        });
-        setTimeout(() => navigate('/dashboard'), 100);
+        // Free plan: insert a new user row in Supabase (plan: 'free', is_paid: false)
+        const { error } = await supabase.from('users').insert([
+          {
+            id: user.id,
+            email: user.primaryEmailAddress?.emailAddress,
+            plan: 'free',
+            is_paid: false,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+        if (error) {
+          toast({ title: "Error", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Plan updated successfully!", description: `You are now on the Free plan.` });
+          navigate('/dashboard');
+        }
       } else {
         // Paid plan: save selection and redirect to payment
         localStorage.setItem('selectedPlan', selectedPlan);
@@ -105,6 +123,8 @@ const Pricing = () => {
       setLoading(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-8">
@@ -220,6 +240,6 @@ const Pricing = () => {
       </Button>
     </div>
   );
-};
+}
 
 export default Pricing;

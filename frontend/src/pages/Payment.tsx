@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { Database } from "@/integrations/supabase/types";
-import { useAuth } from "@/contexts/AuthContext";
-// profile is of type Database["public"]["Tables"]["users"]["Row"] | null
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 
 const Payment = () => {
+  const { user } = useUser();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const { user, refreshProfile } = useAuth();
+
+  // Redirect to signin if not signed in
+  useEffect(() => {
+    if (!user) {
+      navigate('/signin', { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     setSelectedPlan(localStorage.getItem('selectedPlan'));
@@ -20,16 +26,29 @@ const Payment = () => {
     if (!selectedPlan || !user) return;
     setLoading(true);
     try {
-      await supabase.from('users').update({ plan: selectedPlan, paid: true }).eq('id', user.id);
-      await refreshProfile();
-      localStorage.removeItem('selectedPlan');
-      navigate('/dashboard');
+      // Upsert user in Supabase (insert or update)
+      const { error } = await supabase.from('users').upsert([
+        {
+          id: user.id,
+          email: user.primaryEmailAddress?.emailAddress,
+          plan: selectedPlan,
+          is_paid: true,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      if (error) {
+        alert('Payment simulation failed: ' + error.message);
+      } else {
+        localStorage.removeItem('selectedPlan');
+        navigate('/dashboard');
+      }
     } catch (e) {
       alert('Payment simulation failed.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50">

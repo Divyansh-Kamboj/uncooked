@@ -1,36 +1,19 @@
+import { useUser } from "@clerk/clerk-react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
 
 const Index = () => {
+  const { isSignedIn } = useUser();
   const navigate = useNavigate();
-  const [session, setSession] = useState<Session | null>(null);
-  const [userPlan, setUserPlan] = useState<string | null>(null);
-  
+
   useEffect(() => {
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        // Mock user plan - no backend functionality
-        setUserPlan('basic');
-      }
-    });
-  }, []);
-  
-  const handleStartSession = () => {
-    if (session && userPlan) {
-      // User is already signed in, redirect based on plan
-      if (userPlan === 'free') {
-        navigate("/pricing");
-      } else {
-        navigate("/dashboard");
-      }
-    } else {
-      // User not signed in, go to signin page
-      navigate("/signin");
+    if (isSignedIn) {
+      navigate("/dashboard", { replace: true });
     }
+  }, [isSignedIn, navigate]);
+
+  const handleStart = () => {
+    navigate("/signin");
   };
 
   return (
@@ -56,7 +39,7 @@ const Index = () => {
         {/* Click to Start Text */}
         <div className="pt-4">
           <span 
-            onClick={handleStartSession}
+            onClick={handleStart}
             className="click-to-start"
           >
             click to start

@@ -4,9 +4,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
@@ -14,7 +14,7 @@ import { EndSession } from "./pages/EndSession";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Payment from "./pages/Payment";
-import SupabaseMinimalSignIn from "./pages/SupabaseMinimalSignIn";
+import { ClerkProvider } from "@clerk/clerk-react";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +25,7 @@ const AppContent = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/end-session" element={<EndSession />} />
       <Route path="*" element={<NotFound />} />
@@ -32,7 +33,6 @@ const AppContent = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/account" element={<Account />} />
       <Route path="/payment" element={<Payment />} />
-      <Route path="/supabase-minimal-signin" element={<SupabaseMinimalSignIn />} />
     </Routes>
   );
 };
@@ -42,11 +42,11 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
+      <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
+        <BrowserRouter>
           <AppContent />
-        </AuthProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </ClerkProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
