@@ -16,11 +16,15 @@ import NotFound from "./pages/NotFound";
 import Payment from "./pages/Payment";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { AuthProvider } from "@/components/AuthProvider";
+import useTabAnimation from "@/hooks/useTabAnimation";
 
 const queryClient = new QueryClient();
 
 // App content with AuthProvider handling user flow
 const AppContent = () => {
+  // Initialize tab animation
+  useTabAnimation();
+  
   return (
     <AuthProvider>
       <Routes>

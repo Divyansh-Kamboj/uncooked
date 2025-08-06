@@ -9,6 +9,9 @@ interface SupabaseUser {
   plan: 'free' | 'nerd' | 'uncooked' | null;
   is_paid: boolean;
   created_at: string;
+  daily_questions_used: number;
+  daily_ai_explanations_used: number;
+  last_reset_date: string;
 }
 
 interface AuthContextType {

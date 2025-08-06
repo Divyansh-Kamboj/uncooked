@@ -1,4 +1,5 @@
 import { Progress } from "@/components/ui/progress";
+import { getPlanLimits } from "@/config/planLimits";
 
 interface CookedCounterProps {
   cookedCounter: number;
@@ -7,19 +8,24 @@ interface CookedCounterProps {
 }
 
 export const CookedCounter = ({ cookedCounter, userPlan, progressBarColor }: CookedCounterProps) => {
-  const getMaxValue = (plan: string) => {
-    const thresholds = { basic: 5, nerd: 10, uncooked: 10 };
-    return thresholds[plan as keyof typeof thresholds] || 10;
-  };
-
-  const maxValue = getMaxValue(userPlan);
-  const progressPercentage = (cookedCounter / maxValue) * 100;
+  const planLimits = getPlanLimits(userPlan as 'free' | 'nerd' | 'uncooked');
+  const maxValue = planLimits.progressBarMax;
+  
+  // For uncooked plan: fill progress bar to max, then show overflow number
+  const isUnlimited = userPlan === 'uncooked';
+  const displayCounter = isUnlimited && cookedCounter > maxValue 
+    ? `${maxValue}+ (${cookedCounter})` 
+    : cookedCounter.toString();
+  
+  const progressPercentage = isUnlimited && cookedCounter > maxValue 
+    ? 100 
+    : Math.min((cookedCounter / maxValue) * 100, 100);
 
   return (
     <div className="absolute right-0 flex items-center space-x-3">
       <div className="text-sm font-semibold text-orange-800 flex items-center gap-2">
         <span>Cooked Counter:</span>
-        <span className="text-lg font-bold text-orange-600">{cookedCounter}</span>
+        <span className="text-lg font-bold text-orange-600">{displayCounter}</span>
       </div>
       <div className="flex items-center space-x-2">
         <Progress 

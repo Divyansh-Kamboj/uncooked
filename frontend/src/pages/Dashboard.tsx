@@ -8,6 +8,11 @@ import { HeaderSection } from "@/components/dashboard/HeaderSection";
 import { AIExplanation } from "@/components/dashboard/AIExplanation";
 import { useQuestions } from "@/hooks/useQuestions";
 import { useAuth } from "@/components/AuthProvider";
+import { useUsageTracking } from "@/hooks/useUsageTracking";
+import { usePlanLimits } from "@/hooks/usePlanLimits";
+import { CookedLimitPopup } from "@/components/popups/CookedLimitPopup";
+import { QuestionsLimitPopup } from "@/components/popups/QuestionsLimitPopup";
+import { useToast } from "@/hooks/use-toast";
 
 // Color interpolation utility function
 const interpolateColor = (cookedCounter: number, userPlan: string) => {
@@ -35,12 +40,21 @@ const interpolateColor = (cookedCounter: number, userPlan: string) => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   const { supabaseUser, isLoadingUser } = useAuth();
+  const { incrementQuestions, incrementAIExplanations } = useUsageTracking();
+  const { planLimits, limitStatus, userPlan } = usePlanLimits();
+  
+  // UI State
   const [showMarkScheme, setShowMarkScheme] = useState(false);
   const [showAIExplanation, setShowAIExplanation] = useState(false);
-  const [cookedCounter, setCookedCounter] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [paperLoaded, setPaperLoaded] = useState(false);
+  
+  // Popup states
+  const [showCookedLimitPopup, setShowCookedLimitPopup] = useState(false);
+  const [showQuestionsLimitPopup, setShowQuestionsLimitPopup] = useState(false);
+  
   const [filters, setFilters] = useState({
     subject: "",
     year: [] as string[],
@@ -55,11 +69,8 @@ const Dashboard = () => {
     paperLoaded
   });
 
-  // Get user plan, default to 'free' if not available
-  const userPlan = supabaseUser?.plan || 'free';
-  
   // Calculate dynamic color for progress bar
-  const progressBarColor = interpolateColor(cookedCounter, userPlan);
+  const progressBarColor = interpolateColor(limitStatus.aiExplanationsUsed, userPlan);
   
   // Calculate max value for progress bar based on plan
   const getMaxValue = (plan: string) => {
@@ -67,19 +78,58 @@ const Dashboard = () => {
     return thresholds[plan as keyof typeof thresholds] || 5;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Check if user has reached daily question limit before loading paper
+    if (limitStatus.questionsLimitReached) {
+      setShowQuestionsLimitPopup(true);
+      return;
+    }
+
+    // Increment question usage when loading a new paper
+    const success = await incrementQuestions();
+    if (!success) {
+      toast({
+        title: "Error",
+        description: "Failed to track question usage",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setPaperLoaded(true);
     setCurrentQuestion(1);
     setShowMarkScheme(false);
-    // Mock paper loading logic
-    console.log("Paper loaded with filters:", filters);
+    
+    toast({
+      title: "Paper Loaded!",
+      description: `Questions remaining: ${limitStatus.questionsRemaining === -1 ? "Unlimited" : limitStatus.questionsRemaining - 1}`
+    });
   };
 
-  const handleAIExplanation = () => {
-    setCookedCounter(prev => prev + 1);
+  const handleAIExplanation = async () => {
+    // Check if user has reached AI explanation limit
+    if (limitStatus.aiExplanationsLimitReached) {
+      setShowCookedLimitPopup(true);
+      return;
+    }
+
+    // Increment AI explanation usage
+    const success = await incrementAIExplanations();
+    if (!success) {
+      toast({
+        title: "Error",
+        description: "Failed to track AI explanation usage",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setShowAIExplanation(true);
-    // Mock AI explanation logic
-    console.log("AI Explanation requested");
+    
+    toast({
+      title: "🔥 You're getting cooked!",
+      description: `AI explanations remaining: ${limitStatus.aiExplanationsRemaining === -1 ? "Unlimited" : limitStatus.aiExplanationsRemaining - 1}`
+    });
   };
 
   const handlePreviousQuestion = () => {
@@ -87,24 +137,45 @@ const Dashboard = () => {
     setShowMarkScheme(false);
   };
 
-  const handleNextQuestion = () => {
-    setCurrentQuestion(prev => Math.min(prev + 1, questions.length));
-    setShowMarkScheme(false);
-    setShowAIExplanation(false);
+  const handleNextQuestion = async () => {
+    // Check if we need to increment question usage (moving to next question)
+    const nextQuestionIndex = currentQuestion + 1;
+    
+    if (nextQuestionIndex <= questions.length) {
+      // Check limits before allowing navigation to next question
+      if (limitStatus.questionsLimitReached) {
+        setShowQuestionsLimitPopup(true);
+        return;
+      }
+
+      // Increment question usage for next question
+      const success = await incrementQuestions();
+      if (!success) {
+        toast({
+          title: "Error",
+          description: "Failed to track question usage",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setCurrentQuestion(nextQuestionIndex);
+      setShowMarkScheme(false);
+      setShowAIExplanation(false);
+    }
   };
 
   const handleEndSession = () => {
     // Navigate to end session page with current state
     navigate("/end-session", { 
       state: { 
-        cookedCounter, 
+        cookedCounter: limitStatus.aiExplanationsUsed, 
         userPlan 
       } 
     });
   };
 
   const handleRestartSession = useCallback(() => {
-    setCookedCounter(0);
     setPaperLoaded(false);
     setCurrentQuestion(1);
     setShowMarkScheme(false);
@@ -116,7 +187,23 @@ const Dashboard = () => {
       session: [] as string[],
       difficulty: ""
     });
+    // Note: We don't reset usage counters as they are daily limits
   }, []);
+
+  // Handle upgrade navigation
+  const handleUpgrade = () => {
+    navigate('/pricing');
+  };
+
+  // Handle continue without explanations
+  const handleContinueWithoutExplanations = () => {
+    setShowCookedLimitPopup(false);
+    // User can continue using the app but without AI explanations
+    toast({
+      title: "Continuing without explanations",
+      description: "You can still view questions and mark schemes!"
+    });
+  };
 
   // Check if we need to reset session (coming from EndSession page)
   useEffect(() => {
@@ -143,7 +230,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6">
       {/* Header Section */}
       <HeaderSection 
-        cookedCounter={cookedCounter}
+        cookedCounter={limitStatus.aiExplanationsUsed}
         userPlan={userPlan}
         progressBarColor={progressBarColor}
       />
@@ -193,6 +280,8 @@ const Dashboard = () => {
           showMarkScheme={showMarkScheme}
           onToggleMarkScheme={() => setShowMarkScheme(!showMarkScheme)}
           onAIExplanation={handleAIExplanation}
+          aiExplanationDisabled={limitStatus.aiExplanationsLimitReached}
+          aiExplanationsRemaining={limitStatus.aiExplanationsRemaining}
         />
       </div>
 
@@ -200,6 +289,24 @@ const Dashboard = () => {
       <SessionControls 
         onRestartSession={handleRestartSession}
         onEndSession={handleEndSession}
+      />
+
+      {/* Limit Popups */}
+      <CookedLimitPopup
+        isOpen={showCookedLimitPopup}
+        onClose={() => setShowCookedLimitPopup(false)}
+        onContinueWithoutExplanations={handleContinueWithoutExplanations}
+        onUpgrade={handleUpgrade}
+        planType={userPlan}
+        maxExplanations={planLimits.aiExplanations}
+      />
+
+      <QuestionsLimitPopup
+        isOpen={showQuestionsLimitPopup}
+        onClose={() => setShowQuestionsLimitPopup(false)}
+        onUpgrade={handleUpgrade}
+        planType={userPlan}
+        maxQuestions={planLimits.dailyQuestions}
       />
     </div>
   );
