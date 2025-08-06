@@ -1,5 +1,7 @@
 import { SignUp } from "@clerk/clerk-react";
 
+console.log("SignUp page loaded!");
+
 const SignUpPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-background">

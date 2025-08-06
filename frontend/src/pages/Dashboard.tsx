@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FilterBar } from "@/components/dashboard/FilterBar";
 import { QuestionViewer } from "@/components/dashboard/QuestionViewer";
@@ -7,16 +7,17 @@ import { SessionControls } from "@/components/dashboard/SessionControls";
 import { HeaderSection } from "@/components/dashboard/HeaderSection";
 import { AIExplanation } from "@/components/dashboard/AIExplanation";
 import { useQuestions } from "@/hooks/useQuestions";
+import { useAuth } from "@/components/AuthProvider";
 
 // Color interpolation utility function
 const interpolateColor = (cookedCounter: number, userPlan: string) => {
   const thresholds = {
-    basic: 5,
+    free: 5,
     nerd: 10,
     uncooked: 10
   };
   
-  const threshold = thresholds[userPlan as keyof typeof thresholds] || 10;
+  const threshold = thresholds[userPlan as keyof typeof thresholds] || 5;
   const progress = Math.min(cookedCounter / threshold, 1);
   
   // Start color: #62D7E7 (98, 215, 231)
@@ -34,12 +35,12 @@ const interpolateColor = (cookedCounter: number, userPlan: string) => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { supabaseUser, isLoadingUser } = useAuth();
   const [showMarkScheme, setShowMarkScheme] = useState(false);
   const [showAIExplanation, setShowAIExplanation] = useState(false);
   const [cookedCounter, setCookedCounter] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [paperLoaded, setPaperLoaded] = useState(false);
-  const [userPlan] = useState("basic"); // Default plan - can be changed based on user data
   const [filters, setFilters] = useState({
     subject: "",
     year: [] as string[],
@@ -54,13 +55,16 @@ const Dashboard = () => {
     paperLoaded
   });
 
+  // Get user plan, default to 'free' if not available
+  const userPlan = supabaseUser?.plan || 'free';
+  
   // Calculate dynamic color for progress bar
   const progressBarColor = interpolateColor(cookedCounter, userPlan);
   
   // Calculate max value for progress bar based on plan
   const getMaxValue = (plan: string) => {
-    const thresholds = { basic: 5, nerd: 10, uncooked: 10 };
-    return thresholds[plan as keyof typeof thresholds] || 10;
+    const thresholds = { free: 5, nerd: 10, uncooked: 10 };
+    return thresholds[plan as keyof typeof thresholds] || 5;
   };
 
   const handleSubmit = () => {
@@ -99,7 +103,7 @@ const Dashboard = () => {
     });
   };
 
-  const handleRestartSession = () => {
+  const handleRestartSession = useCallback(() => {
     setCookedCounter(0);
     setPaperLoaded(false);
     setCurrentQuestion(1);
@@ -112,7 +116,7 @@ const Dashboard = () => {
       session: [] as string[],
       difficulty: ""
     });
-  };
+  }, []);
 
   // Check if we need to reset session (coming from EndSession page)
   useEffect(() => {
@@ -122,6 +126,18 @@ const Dashboard = () => {
       navigate(location.pathname, { replace: true, state: null });
     }
   }, [location.state, location.pathname, navigate, handleRestartSession]);
+
+  // Show loading if user data is still being fetched
+  if (isLoadingUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6">

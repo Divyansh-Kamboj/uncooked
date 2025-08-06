@@ -6,29 +6,28 @@ import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/AuthProvider";
 import type { Database } from "@/integrations/supabase/types";
 
-
-// profile is of type Database["public"]["Tables"]["users"]["Row"] | null
-
-// Allowed plan values per Supabase schema: 'uncooked', 'nerd', or null (free user)
-type PlanType = 'nerd' | 'uncooked' | null; // null means free plan
+// Allowed plan values per Supabase schema: 'free', 'nerd', 'uncooked'
+type PlanType = 'free' | 'nerd' | 'uncooked';
 
 const Pricing = () => {
   const { user } = useUser();
+  const { supabaseUser, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('free');
   const [showPriceAnimation, setShowPriceAnimation] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Redirect to signin if not signed in
-    if (!user) {
-      navigate('/signin', { replace: true });
+    // Set current plan as selected if user already has one
+    if (supabaseUser?.plan) {
+      setSelectedPlan(supabaseUser.plan);
     }
-  }, [user, navigate]);
+  }, [supabaseUser]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -39,7 +38,7 @@ const Pricing = () => {
 
   const plans = [
     {
-      id: null as PlanType,
+      id: 'free' as const,
       name: 'Free',
       price: 'Free',
       features: [
@@ -78,40 +77,43 @@ const Pricing = () => {
   // Clerk user already obtained above
 
   const handleChoosePlan = async () => {
-    if (!selectedPlan) return;
+    if (!selectedPlan || !user || !supabaseUser) return;
     setLoading(true);
+    
     try {
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to select a plan.",
-          variant: "destructive",
+      // Update the user's plan in Supabase
+      const { error } = await supabase
+        .from('users')
+        .update({
+          plan: selectedPlan,
+          is_paid: selectedPlan === 'free' ? true : false // Free plan is considered "paid" (no payment needed)
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        toast({ 
+          title: "Error", 
+          description: error.message, 
+          variant: "destructive" 
         });
-        navigate('/signin');
         return;
       }
-      if (selectedPlan === null) {
-        // Free plan: insert a new user row in Supabase (plan: 'free', is_paid: false)
-        const { error } = await supabase.from('users').insert([
-          {
-            id: user.id,
-            email: user.primaryEmailAddress?.emailAddress,
-            plan: 'free',
-            is_paid: false,
-            created_at: new Date().toISOString(),
-          },
-        ]);
-        if (error) {
-          toast({ title: "Error", description: error.message, variant: "destructive" });
-        } else {
-          toast({ title: "Plan updated successfully!", description: `You are now on the Free plan.` });
-          navigate('/dashboard');
-        }
+
+      // Refresh user data to get updated plan
+      await refreshUser();
+      
+      if (selectedPlan === 'free') {
+        toast({ 
+          title: "Plan updated successfully!", 
+          description: "You are now on the Free plan." 
+        });
+        navigate('/dashboard');
       } else {
         // Paid plan: save selection and redirect to payment
         localStorage.setItem('selectedPlan', selectedPlan);
         navigate('/payment');
       }
+      
     } catch (error) {
       console.error('Unexpected error:', error);
       toast({
@@ -181,7 +183,7 @@ const Pricing = () => {
                   <div className="relative text-center h-16 flex flex-col items-center justify-center">
                     {/* New Price - Fades in */}
                     <div 
-                      className={`absolute transition-all duration-[6000ms] ease-in-out ${
+                      className={`absolute transition-all duration-1000 ease-in-out ${
                         showPriceAnimation 
                           ? 'opacity-0 transform translate-y-2' 
                           : 'opacity-100 transform translate-y-0'
@@ -192,7 +194,7 @@ const Pricing = () => {
                     
                     {/* Old Price - Strikes through, shrinks and moves down */}
                     <div 
-                      className={`absolute transition-all duration-[5000ms] ease-in-out ${
+                      className={`absolute transition-all duration-1000 ease-in-out ${
                         showPriceAnimation 
                           ? 'opacity-100 transform translate-y-0' 
                           : 'opacity-60 transform translate-y-6 text-xs line-through text-gray-500'

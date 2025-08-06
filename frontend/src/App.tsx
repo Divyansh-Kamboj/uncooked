@@ -15,25 +15,27 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Payment from "./pages/Payment";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const queryClient = new QueryClient();
 
-// Step 1: Simplified App.tsx Authentication Logic
+// App content with AuthProvider handling user flow
 const AppContent = () => {
-  // The new AuthProvider handles all session/profile logic and redirects.
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/end-session" element={<EndSession />} />
-      <Route path="*" element={<NotFound />} />
-      <Route path="/pricing" element={<Pricing />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/account" element={<Account />} />
-      <Route path="/payment" element={<Payment />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/end-session" element={<EndSession />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/payment" element={<Payment />} />
+      </Routes>
+    </AuthProvider>
   );
 };
 
