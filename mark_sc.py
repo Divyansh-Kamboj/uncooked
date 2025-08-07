@@ -7,28 +7,31 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-PAPER_BUCKET_NAME = os.getenv("PAPER_BUCKET_NAME")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 MARK_SCHEME_BUCKET_NAME = os.getenv("MARK_SCHEME_BUCKET_NAME")
+
+PAPER_DIR = "papers"
 
 app = FastAPI()
 
-def upload_to_supabase_storage(image_bytes, filename, bucket_name):
+def upload_to_supabase_storage(image_bytes, filename, BUCKET_NAME):
     """Uploads an image to a specified Supabase storage bucket."""
     storage_headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
         "Content-Type": "application/octet-stream"
     }
-    upload_url = f"{SUPABASE_URL}/storage/v1/object/{bucket_name}/{filename}"
+    upload_url = f"{SUPABASE_URL}/storage/v1/object/{BUCKET_NAME}/{filename}"
     r = requests.put(upload_url, headers=storage_headers, data=image_bytes)
 
     if r.status_code != 200:
-        print(f"❌ Image upload failed for {filename} to bucket {bucket_name}: {r.text}")
+        print(f"❌ Image upload failed for {filename} to bucket {BUCKET_NAME}: {r.text}")
         return None
     
-    return f"{SUPABASE_URL}/storage/v1/object/public/{bucket_name}/{filename}"
+    return f"{SUPABASE_URL}/storage/v1/object/public/{BUCKET_NAME}/{filename}"
 
 def update_question_with_mark_scheme(metadata):
     """
@@ -79,6 +82,7 @@ def upload_mark_scheme_pdf():
     # NOTE: In a production environment, you would iterate through a directory
     # or handle the file dynamically. For this example, we hardcode the filename.
     mark_scheme_file = "9709_m23_ms_32.pdf"
+    filepath = os.path.join(PAPER_DIR, mark_scheme_file)
     
     doc = fitz.open(mark_scheme_file)
     print(f"\n📄 Processing mark scheme: {mark_scheme_file}...")
@@ -94,7 +98,6 @@ def upload_mark_scheme_pdf():
     year = f"20{year_suffix}"
     component = {
         "1": "Pure 1",
-        "2": "Pure 2",
         "3": "Pure 3",
         "4": "Mechanics",
         "5": "Stats 1",
