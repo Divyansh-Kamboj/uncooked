@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "./components/ui/toaster";
+import { Toaster as Sonner } from "./components/ui/sonner";
+import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
@@ -15,8 +15,8 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Payment from "./pages/Payment";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { AuthProvider } from "@/components/AuthProvider";
-import useTabAnimation from "@/hooks/useTabAnimation";
+import { AuthProvider } from "./components/AuthProvider";
+import useTabAnimation from "./hooks/useTabAnimation";
 
 const queryClient = new QueryClient();
 
