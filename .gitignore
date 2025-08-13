@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+
+# Test files and temporary content
+test.py
+test.txt
+paper.txt
+*.pdf
+question_images/
+question images/
