@@ -22,10 +22,15 @@ export const ActionButtons = ({
   const [isAILoading, setIsAILoading] = useState(false);
 
   const handleAIExplanation = async () => {
-    setIsAILoading(true);
-    onAIExplanation();
-    // Simulate loading time
-    setTimeout(() => setIsAILoading(false), 2000);
+    // Only show loading state if it's going to take a noticeable amount of time
+    const loadingTimer = setTimeout(() => setIsAILoading(true), 300);
+    
+    try {
+      await onAIExplanation();
+    } finally {
+      clearTimeout(loadingTimer);
+      setIsAILoading(false);
+    }
   };
 
   return (
@@ -56,17 +61,13 @@ export const ActionButtons = ({
             <span className="flex items-center gap-2">
               {isAILoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                  Cooking up explanation...
+                  <div className="animate-pulse">🤖</div>
+                  <span className="opacity-70">Preparing explanation...</span>
                 </>
               ) : aiExplanationDisabled ? (
-                <>
-                  🔥 Cooked!
-                </>
+                <span className="opacity-70">🔥 Cooked!</span>
               ) : (
-                <>
-                  🤖 AI Explanation
-                </>
+                <span>🤖 AI Explanation</span>
               )}
             </span>
           </Button>

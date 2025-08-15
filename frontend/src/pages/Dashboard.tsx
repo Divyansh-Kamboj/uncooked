@@ -110,26 +110,33 @@ const Dashboard = () => {
     // Check if user has reached AI explanation limit
     if (limitStatus.aiExplanationsLimitReached) {
       setShowCookedLimitPopup(true);
-      return;
+      return false;
     }
 
-    // Increment AI explanation usage
-    const success = await incrementAIExplanations();
-    if (!success) {
+    try {
+      // Increment AI explanation usage
+      const success = await incrementAIExplanations();
+      if (!success) {
+        toast({
+          title: "Error",
+          description: "Failed to track AI explanation usage",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      setShowAIExplanation(true);
+      
       toast({
-        title: "Error",
-        description: "Failed to track AI explanation usage",
-        variant: "destructive"
+        title: "🔥 You're getting cooked!",
+        description: `AI explanations remaining: ${limitStatus.aiExplanationsRemaining === -1 ? "Unlimited" : limitStatus.aiExplanationsRemaining - 1}`
       });
-      return;
+      
+      return true;
+    } catch (error) {
+      console.error("Error in handleAIExplanation:", error);
+      return false;
     }
-
-    setShowAIExplanation(true);
-    
-    toast({
-      title: "🔥 You're getting cooked!",
-      description: `AI explanations remaining: ${limitStatus.aiExplanationsRemaining === -1 ? "Unlimited" : limitStatus.aiExplanationsRemaining - 1}`
-    });
   };
 
   const handlePreviousQuestion = () => {
@@ -214,20 +221,8 @@ const Dashboard = () => {
     }
   }, [location.state, location.pathname, navigate, handleRestartSession]);
 
-  // Show loading if user data is still being fetched
-  if (isLoadingUser) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6 relative">
       {/* Header Section */}
       <HeaderSection 
         cookedCounter={limitStatus.aiExplanationsUsed}
@@ -247,7 +242,7 @@ const Dashboard = () => {
         {/* Question and AI Explanation Layout */}
         <div className="flex flex-col lg:flex-row items-center gap-14 w-full max-w-[1800px] mx-auto px-4 lg:ml-12">
           {/* Question Viewer - flexible width with reasonable limits */}
-          <div className={`transition-all duration-500 ease-in-out ${
+          <div className={`transition-all duration-500 ease-in-out relative ${
             showAIExplanation 
               ? 'lg:flex-[2] lg:min-w-[500px] lg:max-w-[900px]' 
               : 'lg:flex-1 lg:max-w-6xl lg:mx-auto'
@@ -261,6 +256,12 @@ const Dashboard = () => {
               questions={questions}
               totalQuestions={questions.length}
             />
+            {isLoadingUser && (
+              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-white/90 px-4 py-2 rounded-full shadow-md">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+                <span className="text-sm font-medium text-gray-700">Loading question...</span>
+              </div>
+            )}
           </div>
 
           {/* AI Explanation Container */}

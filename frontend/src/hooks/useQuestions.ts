@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Question {
@@ -27,6 +27,7 @@ interface UseQuestionsProps {
 }
 
 export const useQuestions = ({ filters, paperLoaded }: UseQuestionsProps) => {
+  const initialLoad = useRef(true);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,11 +74,15 @@ export const useQuestions = ({ filters, paperLoaded }: UseQuestionsProps) => {
         if (queryError) throw queryError;
 
         setQuestions(data || []);
+        initialLoad.current = false;
       } catch (err) {
         console.error('Error fetching questions:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch questions');
       } finally {
-        setLoading(false);
+        // Only update loading state if we're not in the initial load
+        if (!initialLoad.current) {
+          setLoading(false);
+        }
       }
     };
 
