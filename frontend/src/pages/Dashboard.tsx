@@ -13,6 +13,7 @@ import { usePlanLimits } from "@/hooks/usePlanLimits";
 import { CookedLimitPopup } from "@/components/popups/CookedLimitPopup";
 import { QuestionsLimitPopup } from "@/components/popups/QuestionsLimitPopup";
 import { useToast } from "@/hooks/use-toast";
+import { SessionToast } from "@/components/ui/session-toast";
 
 // Color interpolation utility function
 const interpolateColor = (cookedCounter: number, userPlan: string) => {
@@ -172,14 +173,17 @@ const Dashboard = () => {
     }
   };
 
-  const handleEndSession = () => {
-    // Navigate to end session page with current state
-    navigate("/end-session", { 
-      state: { 
-        cookedCounter: limitStatus.aiExplanationsUsed, 
-        userPlan 
-      } 
-    });
+  const handleEndSession = async (showToast: (isCooked: boolean, showUpgrade?: boolean) => void) => {
+    const isCooked = limitStatus.aiExplanationsLimitReached;
+    const showUpgrade = userPlan === 'free' && isCooked;
+    
+    // Show toast if needed
+    if (isCooked) {
+      showToast(isCooked, showUpgrade);
+    }
+    
+    // For now, we'll just return a resolved promise
+    return Promise.resolve();
   };
 
   const handleRestartSession = useCallback(() => {
@@ -290,6 +294,10 @@ const Dashboard = () => {
       <SessionControls 
         onRestartSession={handleRestartSession}
         onEndSession={handleEndSession}
+        cookedCounter={limitStatus.aiExplanationsUsed}
+        maxCookedCount={planLimits.aiExplanations}
+        usedAiExplanations={limitStatus.aiExplanationsUsed}
+        maxAiExplanations={planLimits.aiExplanations}
       />
 
       {/* Limit Popups */}

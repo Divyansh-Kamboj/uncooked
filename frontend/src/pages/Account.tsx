@@ -38,20 +38,18 @@ const Account = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 p-6">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-8">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/dashboard')}
-            className="mr-4 h-10 w-10 rounded-full bg-white/50 hover:bg-white/70 text-orange-700"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-3xl font-bold text-orange-800">My Account</h1>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+      <Button
+        variant="ghost"
+        onClick={() => navigate('/dashboard')}
+        className="absolute top-6 left-6 text-orange-700 hover:bg-orange-100 px-4 py-2 rounded-lg"
+      >
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Back to Dashboard
+      </Button>
+      
+      <div className="max-w-2xl mx-auto pt-24 px-6 pb-12">
+        <h1 className="text-3xl font-bold text-orange-800 mb-8">My Account</h1>
 
         {/* P Card */}
         <Card className="bg-white backdrop-blur-sm border-orange-200 shadow-lg">
@@ -61,7 +59,7 @@ const Account = () => {
                 <User className="h-10 w-10 text-orange-700" />
               </div>
             </div>
-            <CardTitle className="text-2xl text-orange-800">P Details</CardTitle>
+            <CardTitle className="text-2xl text-orange-800">Your Profile</CardTitle>
             <CardDescription className="text-orange-600">
               Manage your account information
             </CardDescription>
@@ -107,29 +105,56 @@ const Account = () => {
             </div>
 
             {/* Plan */}
-            <div className="space-y-2">
-              <Label className="text-orange-800 font-medium">Current Plan</Label>
-              <div className="flex items-center space-x-2">
-                <Badge
-  variant={plan === 'uncooked' ? 'default' : 'secondary'}
-  className={plan === 'uncooked'
-    ? 'bg-orange-600 text-white'
-    : 'bg-orange-100 text-orange-800'}
->
-  {plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'Free'}
-</Badge>
-{plan !== 'uncooked' && (
-  <Button
-    variant="outline"
-    size="sm"
-    onClick={() => navigate('/pricing')}
-    className="border-orange-300 text-orange-700 hover:bg-orange-50"
-  >
-    Upgrade Plan
-  </Button>
-)}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-orange-800 font-medium">Current Plan</Label>
+                <div className="flex items-center space-x-2">
+                  <Badge
+                    variant={plan === 'uncooked' ? 'default' : 'secondary'}
+                    className={plan === 'uncooked'
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-orange-100 text-orange-800'}
+                  >
+                    {plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'Free'}
+                  </Badge>
+                  {plan !== 'uncooked' && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => navigate('/pricing')}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      Upgrade Plan
+                    </Button>
+                  )}
+                </div>
               </div>
-              {/* Paid status removed: Add back if you fetch it from Supabase */}
+
+              {/* Billing Information */}
+              <div className="space-y-2">
+                <Label className="text-orange-800 font-medium">Billing Information</Label>
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-600">Card ending in</span>
+                    <span className="font-medium">•••• 4242</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <span>Expires</span>
+                    <span>••/••</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Plan End Date */}
+              <div className="space-y-2">
+                <Label className="text-orange-800 font-medium">Plan ends on</Label>
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Next billing date</span>
+                    <span className="font-medium">December 31, 2024</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Member Since */}
@@ -139,8 +164,8 @@ const Account = () => {
             <div className="pt-4 border-t border-orange-200">
               <Button
                 onClick={() => signOut()}
-                variant="outline"
-                className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:text-orange-800"
+                variant="default"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               >
                 Sign Out
               </Button>
