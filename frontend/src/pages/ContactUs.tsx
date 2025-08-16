@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Mail, MessageSquare, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import emailjs from '@emailjs/browser';
 
 const ContactUs = () => {
   const navigate = useNavigate();
@@ -19,26 +20,41 @@ const ContactUs = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
-      // For now, simulate a successful email send
-      // In production, you would set up a proper email service
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
-      
-      // Simulate successful email send
-      setSubmitStatus('success');
-      // Reset form
-      (e.target as HTMLFormElement).reset();
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-      
-      // Log the form data for debugging (remove in production)
-      console.log('Form submitted:', {
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        email: formData.get('email'),
-        subject: formData.get('subject'),
-        message: formData.get('message')
-      });
+      // EmailJS configuration
+      const templateParams = {
+        user_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+        user_email: formData.get('email'),
+        user_subject: formData.get('subject'),
+        user_message: formData.get('message'),
+      };
+
+      // Get EmailJS credentials from environment variables
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error('EmailJS credentials not configured');
+      }
+
+      const response = await emailjs.send(
+        serviceId,
+        templateId,
+        templateParams,
+        publicKey
+      );
+
+      if (response.status === 200) {
+        setSubmitStatus('success');
+        // Reset form
+        (e.target as HTMLFormElement).reset();
+        setTimeout(() => setSubmitStatus('idle'), 5000);
+      } else {
+        throw new Error('Failed to send message');
+      }
       
     } catch (error) {
+      console.error('EmailJS error:', error);
       setSubmitStatus('error');
       setTimeout(() => setSubmitStatus('idle'), 5000);
     } finally {
@@ -201,7 +217,7 @@ const ContactUs = () => {
               </Button>
             </form>
 
-            <div className="mt-4 text-center space-y-2">
+            <div className="mt-4 text-center">
               <p className="text-xs text-gray-500">
                 Or email us directly at{' '}
                 <a 
@@ -211,14 +227,6 @@ const ContactUs = () => {
                   uncookeddr@gmail.com
                 </a>
               </p>
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-xs text-blue-700">
-                  <strong>Note:</strong> This form currently simulates email sending. 
-                  To make it functional, you'll need to set up an email service like 
-                  EmailJS, Formspree, or a backend API. The form data is logged to 
-                  the browser console for testing.
-                </p>
-              </div>
             </div>
           </div>
         </div>
