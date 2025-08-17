@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Divyansh-Kamboj.github.io/uncooked",
+  "homepage": "https://uncooked.works",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
