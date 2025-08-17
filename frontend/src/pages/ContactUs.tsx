@@ -4,13 +4,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Mail, MessageSquare, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import emailjs from '@emailjs/browser';
 
 const ContactUs = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Initialize EmailJS
+  useEffect(() => {
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    if (publicKey) {
+      emailjs.init(publicKey);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,7 +30,8 @@ const ContactUs = () => {
     try {
       // EmailJS configuration
       const templateParams = {
-        user_name: `${formData.get('firstName')} ${formData.get('lastName')}`,
+        first_name: formData.get('firstName'),
+        last_name: formData.get('lastName'),
         user_email: formData.get('email'),
         user_subject: formData.get('subject'),
         user_message: formData.get('message'),
