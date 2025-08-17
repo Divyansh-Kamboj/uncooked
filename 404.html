@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Uncooked - Redirecting...</title>
+    <script type="text/javascript">
+      // GitHub Pages 404 fallback for HashRouter
+      // Redirects any direct path access to hash route
+      var path = window.location.pathname;
+      var search = window.location.search;
+      var hash = window.location.hash;
+      
+      // Remove leading slash and redirect to hash route
+      var cleanPath = path.replace(/^\//, '');
+      if (cleanPath) {
+        window.location.replace('/#' + path + search + hash);
+      } else {
+        window.location.replace('/');
+      }
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>
