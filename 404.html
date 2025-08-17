@@ -10,6 +10,21 @@
       var search = window.location.search;
       var hash = window.location.hash;
       
+      // Handle Clerk redirect URLs properly
+      if (search.includes('redirect_url')) {
+        // Extract the redirect URL and convert to hash format
+        var urlParams = new URLSearchParams(search);
+        var redirectUrl = urlParams.get('redirect_url');
+        if (redirectUrl) {
+          // Convert the redirect URL to hash format
+          var url = new URL(redirectUrl);
+          var hashPath = url.pathname;
+          if (hashPath === '/') hashPath = '';
+          window.location.replace('/#' + hashPath + url.search + url.hash);
+          return;
+        }
+      }
+      
       // Remove leading slash and redirect to hash route
       var cleanPath = path.replace(/^\//, '');
       if (cleanPath) {
