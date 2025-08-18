@@ -9,6 +9,7 @@ const SignUpPage = () => {
       <div className="w-full max-w-md">
         <SignUp
           afterSignUpUrl="#/pricing"
+          redirectUrl="#/dashboard"
           appearance={{
             elements: {
               card: "bg-white shadow-lg rounded-xl p-8",
@@ -21,7 +22,7 @@ const SignUpPage = () => {
           <p className="text-xs text-gray-500 leading-relaxed">
             By signing up, you agree to our{" "}
             <Link 
-              to="/terms-and-conditions" 
+              to="#/terms-and-conditions" 
               className="text-orange-600 hover:text-orange-700 underline"
               target="_blank"
             >
@@ -29,7 +30,7 @@ const SignUpPage = () => {
             </Link>{" "}
             and{" "}
             <Link 
-              to="/privacy-policy" 
+              to="#/privacy-policy" 
               className="text-orange-600 hover:text-orange-700 underline"
               target="_blank"
             >

@@ -8,7 +8,7 @@ const SignInPage = () => {
 
   useEffect(() => {
     if (isSignedIn) {
-      navigate("/dashboard", { replace: true });
+      navigate("#/dashboard", { replace: true });
     }
   }, [isSignedIn, navigate]);
 
@@ -17,6 +17,7 @@ const SignInPage = () => {
       <SignIn 
         afterSignUpUrl="#/pricing" 
         signUpUrl="#/signup"
+        redirectUrl="#/dashboard"
         appearance={{
           elements: {
             card: "bg-white shadow-lg rounded-xl p-8",

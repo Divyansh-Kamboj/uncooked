@@ -14,7 +14,7 @@ const Index = () => {
 
   const handleStart = () => {
     // For HashRouter, programmatic navigate works; ensure route exists
-    navigate("/signin");
+    navigate("#/signin");
   };
 
   return (

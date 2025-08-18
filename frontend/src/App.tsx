@@ -23,6 +23,7 @@ import FAQ from "./pages/FAQ";
 import Footer from "./components/Footer";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { AuthProvider } from "./components/AuthProvider";
+import { RedirectHandler } from "./components/RedirectHandler";
 import useTabAnimation from "./hooks/useTabAnimation";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const AppContent = () => {
   
   return (
     <AuthProvider>
+      <RedirectHandler />
       <div className="min-h-screen flex flex-col">
         <div className="flex-1">
           <Routes>
