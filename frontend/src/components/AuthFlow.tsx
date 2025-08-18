@@ -1,57 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type AuthStep = 'landing' | 'signin' | 'signup';
 
 const AuthFlow = () => {
   const [currentStep, setCurrentStep] = useState<AuthStep>('landing');
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // Always sync state with URL
+  // Handle user authentication state
   useEffect(() => {
-    const path = location.pathname;
-    if (path === '/signin') {
-      setCurrentStep('signin');
-    } else if (path === '/signup') {
-      setCurrentStep('signup');
-    } else if (path === '/') {
-      setCurrentStep('landing');
+    if (isLoaded && isSignedIn) {
+      // User is signed in, go directly to dashboard
+      navigate('/dashboard', { replace: true });
     }
-  }, [location.pathname]);
-
-  // Clean up any Clerk redirect URLs that might get added
-  useEffect(() => {
-    if (location.search || location.hash.includes('redirect_url')) {
-      // Clean up the URL by removing query parameters and redirect hashes
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, '', cleanUrl);
-    }
-  }, [location.search, location.hash]);
-
-  // If user is signed in, redirect to dashboard
-  React.useEffect(() => {
-    if (isSignedIn) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [isSignedIn, navigate]);
+  }, [isSignedIn, isLoaded, navigate]);
 
   const handleStart = () => {
-    navigate('/signin');
+    if (isSignedIn) {
+      // User is already signed in, go to dashboard
+      navigate('/dashboard', { replace: true });
+    } else {
+      // User is not signed in, show signin form
+      setCurrentStep('signin');
+    }
   };
 
   const handleSignUpClick = () => {
-    navigate('/signup');
+    setCurrentStep('signup');
   };
 
   const handleBackToSignIn = () => {
-    navigate('/signin');
+    setCurrentStep('signin');
   };
 
   const handleBackToLanding = () => {
-    navigate('/');
+    setCurrentStep('landing');
   };
 
   // Landing page

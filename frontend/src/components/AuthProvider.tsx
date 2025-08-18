@@ -137,10 +137,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!isClerkLoaded || isLoadingUser) return;
 
-    const currentRoute = getCurrentRoute();
-
     // If user is signed in, handle plan routing
     if (clerkUser && supabaseUser) {
+      const currentRoute = getCurrentRoute();
+      
       // Plan routing
       if (supabaseUser.plan === null && currentRoute !== '/pricing') {
         navigate('/pricing', { replace: true });
@@ -152,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
     }
-  }, [clerkUser, supabaseUser, isLoadingUser, isClerkLoaded, location.hash, location.pathname, navigate]);
+  }, [clerkUser, supabaseUser, isLoadingUser, isClerkLoaded, navigate]);
 
   const value: AuthContextType = {
     supabaseUser,
