@@ -11,11 +11,13 @@ const AuthFlow = () => {
 
   // Handle user authentication state
   useEffect(() => {
+    console.log('Auth state changed:', { isLoaded, isSignedIn, currentStep });
     if (isLoaded && isSignedIn) {
       // User is signed in, go directly to dashboard
+      console.log('User is signed in, navigating to dashboard');
       navigate('/dashboard', { replace: true });
     }
-  }, [isSignedIn, isLoaded, navigate]);
+  }, [isSignedIn, isLoaded, navigate, currentStep]);
 
   const handleStart = () => {
     if (isSignedIn) {
@@ -27,7 +29,10 @@ const AuthFlow = () => {
     }
   };
 
-  const handleSignUpClick = () => {
+  const handleSignUpClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Sign up clicked - setting step to signup');
     setCurrentStep('signup');
   };
 
@@ -93,6 +98,7 @@ const AuthFlow = () => {
                 formButtonPrimary: "bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
               },
             }}
+            afterSignInUrl="/dashboard"
           />
           <div className="mt-4 text-center">
             <button 
@@ -127,6 +133,7 @@ const AuthFlow = () => {
                 formButtonPrimary: "bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
               },
             }}
+            afterSignUpUrl="/pricing"
           />
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500 leading-relaxed">
