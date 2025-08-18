@@ -8,16 +8,16 @@ const SignInPage = () => {
 
   useEffect(() => {
     if (isSignedIn) {
-      navigate("#/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [isSignedIn, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-background">
       <SignIn 
-        afterSignUpUrl="#/pricing" 
-        signUpUrl="#/signup"
-        redirectUrl="#/dashboard"
+        afterSignUpUrl="/pricing" 
+        signUpUrl="/signup"
+        redirectUrl="/dashboard"
         appearance={{
           elements: {
             card: "bg-white shadow-lg rounded-xl p-8",

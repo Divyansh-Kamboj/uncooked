@@ -15,12 +15,15 @@ export const RedirectHandler = () => {
       const cleanUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, '', cleanUrl);
       
-      // If the redirect URL is a hash route, navigate to it
-      if (redirectUrl.includes('#')) {
-        const hashRoute = redirectUrl.split('#')[1];
-        if (hashRoute) {
-          navigate(`#${hashRoute}`, { replace: true });
+      // Extract the route from the redirect URL
+      try {
+        const url = new URL(redirectUrl);
+        const path = url.pathname;
+        if (path && path !== '/') {
+          navigate(path, { replace: true });
         }
+      } catch (error) {
+        console.warn('Invalid redirect URL:', redirectUrl);
       }
     }
   }, [navigate, location]);

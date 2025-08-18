@@ -13,8 +13,8 @@ const Index = () => {
   }, [isSignedIn, navigate]);
 
   const handleStart = () => {
-    // For HashRouter, programmatic navigate works; ensure route exists
-    navigate("#/signin");
+    // For HashRouter, navigate without hash prefix
+    navigate("/signin");
   };
 
   return (

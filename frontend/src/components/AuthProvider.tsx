@@ -143,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!clerkUser) {
       const publicRoutes = ['/', '/signin', '/signup', '/reset-password', '/about', '/contact', '/terms-and-conditions', '/privacy-policy', '/refund-policy', '/faq'];
       if (!publicRoutes.includes(currentRoute)) {
-        navigate('#/signin', { replace: true });
+        navigate('/signin', { replace: true });
       }
       return;
     }
@@ -155,12 +155,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Plan routing
     if (supabaseUser.plan === null && currentRoute !== '/pricing') {
-      navigate('#/pricing', { replace: true });
+      navigate('/pricing', { replace: true });
       return;
     }
 
     if ((supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && !supabaseUser.is_paid && currentRoute === '/dashboard') {
-      navigate('#/payment', { replace: true });
+      navigate('/payment', { replace: true });
       return;
     }
   }, [clerkUser, supabaseUser, isLoadingUser, isClerkLoaded, location.hash, location.pathname, navigate]);
