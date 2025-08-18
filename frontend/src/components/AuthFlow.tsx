@@ -10,17 +10,27 @@ const AuthFlow = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle URL-based navigation
+  // Only handle initial URL - ignore all subsequent URL changes during auth flow
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/signin') {
+    // Only set initial state based on clean URL, then ignore all changes
+    if (path === '/signin' && !location.search && !location.hash) {
       setCurrentStep('signin');
-    } else if (path === '/signup') {
+    } else if (path === '/signup' && !location.search && !location.hash) {
       setCurrentStep('signup');
-    } else if (path === '/') {
+    } else if (path === '/' && !location.search && !location.hash) {
       setCurrentStep('landing');
     }
-  }, [location.pathname]);
+  }, []); // Empty dependency array - only run once on mount
+
+  // Clean up any Clerk redirect URLs that might get added
+  useEffect(() => {
+    if (location.search || location.hash.includes('redirect_url')) {
+      // Clean up the URL by removing query parameters and redirect hashes
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  }, [location.search, location.hash]);
 
   // If user is signed in, redirect to dashboard
   React.useEffect(() => {
@@ -31,17 +41,17 @@ const AuthFlow = () => {
 
   const handleStart = () => {
     setCurrentStep('signin');
-    navigate('/signin');
+    // Don't navigate - stay on the same URL to avoid conflicts
   };
 
   const handleSignUpClick = () => {
     setCurrentStep('signup');
-    navigate('/signup');
+    // Don't navigate - stay on the same URL to avoid conflicts
   };
 
   const handleBackToSignIn = () => {
     setCurrentStep('signin');
-    navigate('/signin');
+    // Don't navigate - stay on the same URL to avoid conflicts
   };
 
   const handleBackToLanding = () => {
