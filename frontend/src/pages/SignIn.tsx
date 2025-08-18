@@ -15,8 +15,8 @@ const SignInPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-background">
       <SignIn 
-        afterSignUpUrl="/pricing" 
-        signUpUrl="/signup"
+        afterSignUpUrl="#/pricing" 
+        signUpUrl="#/signup"
         appearance={{
           elements: {
             card: "bg-white shadow-lg rounded-xl p-8",

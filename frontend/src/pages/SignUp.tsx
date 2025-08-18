@@ -8,7 +8,7 @@ const SignUpPage = () => {
     <div className="flex justify-center items-center min-h-screen bg-background">
       <div className="w-full max-w-md">
         <SignUp
-          afterSignUpUrl="/pricing"
+          afterSignUpUrl="#/pricing"
           appearance={{
             elements: {
               card: "bg-white shadow-lg rounded-xl p-8",
