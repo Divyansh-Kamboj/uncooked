@@ -36,6 +36,8 @@ const AppContent = () => {
         <div className="flex-1">
           <Routes>
             <Route path="/" element={<AuthFlow />} />
+            <Route path="/signin" element={<AuthFlow />} />
+            <Route path="/signup" element={<AuthFlow />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/end-session" element={<EndSession />} />
             <Route path="*" element={<NotFound />} />

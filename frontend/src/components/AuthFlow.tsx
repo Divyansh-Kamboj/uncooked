@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type AuthStep = 'landing' | 'signin' | 'signup';
 
@@ -8,6 +8,19 @@ const AuthFlow = () => {
   const [currentStep, setCurrentStep] = useState<AuthStep>('landing');
   const { isSignedIn } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle URL-based navigation
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/signin') {
+      setCurrentStep('signin');
+    } else if (path === '/signup') {
+      setCurrentStep('signup');
+    } else if (path === '/') {
+      setCurrentStep('landing');
+    }
+  }, [location.pathname]);
 
   // If user is signed in, redirect to dashboard
   React.useEffect(() => {
@@ -18,18 +31,22 @@ const AuthFlow = () => {
 
   const handleStart = () => {
     setCurrentStep('signin');
+    navigate('/signin');
   };
 
   const handleSignUpClick = () => {
     setCurrentStep('signup');
+    navigate('/signup');
   };
 
   const handleBackToSignIn = () => {
     setCurrentStep('signin');
+    navigate('/signin');
   };
 
   const handleBackToLanding = () => {
     setCurrentStep('landing');
+    navigate('/');
   };
 
   // Landing page
@@ -80,9 +97,6 @@ const AuthFlow = () => {
             </button>
           </div>
           <SignIn 
-            afterSignUpUrl="/pricing" 
-            signUpUrl="/signup"
-            redirectUrl="/dashboard"
             appearance={{
               elements: {
                 card: "bg-white shadow-lg rounded-xl p-8",
@@ -117,8 +131,6 @@ const AuthFlow = () => {
             </button>
           </div>
           <SignUp
-            afterSignUpUrl="/pricing"
-            redirectUrl="/dashboard"
             appearance={{
               elements: {
                 card: "bg-white shadow-lg rounded-xl p-8",
