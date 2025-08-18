@@ -10,18 +10,17 @@ const AuthFlow = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Only handle initial URL - ignore all subsequent URL changes during auth flow
+  // Always sync state with URL
   useEffect(() => {
     const path = location.pathname;
-    // Only set initial state based on clean URL, then ignore all changes
-    if (path === '/signin' && !location.search && !location.hash) {
+    if (path === '/signin') {
       setCurrentStep('signin');
-    } else if (path === '/signup' && !location.search && !location.hash) {
+    } else if (path === '/signup') {
       setCurrentStep('signup');
-    } else if (path === '/' && !location.search && !location.hash) {
+    } else if (path === '/') {
       setCurrentStep('landing');
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, [location.pathname]);
 
   // Clean up any Clerk redirect URLs that might get added
   useEffect(() => {
@@ -40,22 +39,18 @@ const AuthFlow = () => {
   }, [isSignedIn, navigate]);
 
   const handleStart = () => {
-    setCurrentStep('signin');
-    // Don't navigate - stay on the same URL to avoid conflicts
+    navigate('/signin');
   };
 
   const handleSignUpClick = () => {
-    setCurrentStep('signup');
-    // Don't navigate - stay on the same URL to avoid conflicts
+    navigate('/signup');
   };
 
   const handleBackToSignIn = () => {
-    setCurrentStep('signin');
-    // Don't navigate - stay on the same URL to avoid conflicts
+    navigate('/signin');
   };
 
   const handleBackToLanding = () => {
-    setCurrentStep('landing');
     navigate('/');
   };
 
