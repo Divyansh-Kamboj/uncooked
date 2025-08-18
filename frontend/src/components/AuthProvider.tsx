@@ -139,29 +139,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const currentRoute = getCurrentRoute();
 
-    // Allow public routes if not signed in
-    if (!clerkUser) {
-      const publicRoutes = ['/', '/signin', '/signup', '/reset-password', '/about', '/contact', '/terms-and-conditions', '/privacy-policy', '/refund-policy', '/faq'];
-      if (!publicRoutes.includes(currentRoute)) {
-        navigate('/signin', { replace: true });
+    // If user is signed in, handle plan routing
+    if (clerkUser && supabaseUser) {
+      // Plan routing
+      if (supabaseUser.plan === null && currentRoute !== '/pricing') {
+        navigate('/pricing', { replace: true });
+        return;
       }
-      return;
-    }
 
-    if (!supabaseUser) {
-      console.warn('Clerk user exists but no Supabase user found');
-      return;
-    }
-
-    // Plan routing
-    if (supabaseUser.plan === null && currentRoute !== '/pricing') {
-      navigate('/pricing', { replace: true });
-      return;
-    }
-
-    if ((supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && !supabaseUser.is_paid && currentRoute === '/dashboard') {
-      navigate('/payment', { replace: true });
-      return;
+      if ((supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && !supabaseUser.is_paid && currentRoute === '/dashboard') {
+        navigate('/payment', { replace: true });
+        return;
+      }
     }
   }, [clerkUser, supabaseUser, isLoadingUser, isClerkLoaded, location.hash, location.pathname, navigate]);
 

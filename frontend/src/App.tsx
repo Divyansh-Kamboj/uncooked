@@ -4,9 +4,7 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import Index from "./pages/Index";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
+import AuthFlow from "./components/AuthFlow";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
@@ -23,7 +21,6 @@ import FAQ from "./pages/FAQ";
 import Footer from "./components/Footer";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { AuthProvider } from "./components/AuthProvider";
-import { RedirectHandler } from "./components/RedirectHandler";
 import useTabAnimation from "./hooks/useTabAnimation";
 
 const queryClient = new QueryClient();
@@ -35,13 +32,10 @@ const AppContent = () => {
   
   return (
     <AuthProvider>
-      <RedirectHandler />
       <div className="min-h-screen flex flex-col">
         <div className="flex-1">
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/" element={<AuthFlow />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/end-session" element={<EndSession />} />
             <Route path="*" element={<NotFound />} />
