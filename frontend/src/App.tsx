@@ -9,7 +9,7 @@ import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Account from "./pages/Account";
 import { EndSession } from "./pages/EndSession";
-import ResetPassword from "./pages/ResetPassword";
+
 import NotFound from "./pages/NotFound";
 import Payment from "./pages/Payment";
 import AboutUs from "./pages/AboutUs";
@@ -38,7 +38,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<AuthFlow />} />
             <Route path="/callback" element={<Auth0Callback />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+
             <Route path="/end-session" element={<EndSession />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/pricing" element={<Pricing />} />

@@ -13,10 +13,10 @@ const Payment = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { refreshUser } = useAuth();
 
-  // Redirect to signin if not signed in
+  // Redirect to home if not signed in
   useEffect(() => {
     if (!user) {
-      navigate('/signin', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [user, navigate]);
 
