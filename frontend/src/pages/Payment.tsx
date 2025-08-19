@@ -29,8 +29,8 @@ const Payment = () => {
       // Upsert user in Supabase (insert or update)
       const { error } = await supabase.from('users').upsert([
         {
-          id: user.id,
-          email: user.primaryEmailAddress?.emailAddress,
+          id: user.sub,
+          email: user.email,
           plan: selectedPlan,
           is_paid: true,
           created_at: new Date().toISOString(),

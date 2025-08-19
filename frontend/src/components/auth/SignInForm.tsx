@@ -32,7 +32,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSwitchToSignUp }) => {
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
-      <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">Sign In</h2>
       
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
@@ -51,7 +51,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSwitchToSignUp }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
             placeholder="Enter your email"
           />
         </div>
@@ -66,7 +66,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSwitchToSignUp }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
             placeholder="Enter your password"
           />
         </div>

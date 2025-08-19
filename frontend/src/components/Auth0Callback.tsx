@@ -51,8 +51,19 @@ const Auth0Callback: React.FC = () => {
             console.log('User already exists in Supabase');
           }
 
-          // Navigate to dashboard
-          navigate('/dashboard', { replace: true });
+          // Check if user has a plan
+          const { data: userData } = await supabase
+            .from('users')
+            .select('plan')
+            .eq('id', user.sub)
+            .single();
+
+          // Navigate based on plan status
+          if (userData?.plan === null) {
+            navigate('/pricing', { replace: true });
+          } else {
+            navigate('/dashboard', { replace: true });
+          }
         } catch (err) {
           console.error('Error handling auth callback:', err);
           navigate('/', { replace: true });

@@ -88,7 +88,7 @@ const Pricing = () => {
           plan: selectedPlan,
           is_paid: selectedPlan === 'free' ? true : false // Free plan is considered "paid" (no payment needed)
         })
-        .eq('id', user.id);
+        .eq('id', user.sub);
 
       if (error) {
         toast({ 
