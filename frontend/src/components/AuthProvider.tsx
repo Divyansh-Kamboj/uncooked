@@ -142,13 +142,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const currentRoute = getCurrentRoute();
       
       // Plan routing
-      if (supabaseUser.plan === null && currentRoute !== '/pricing') {
+      if (supabaseUser.plan === null && currentRoute !== '/pricing' && currentRoute !== '/payment') {
         navigate('/pricing', { replace: true });
         return;
       }
 
+      // Only redirect to payment if user has a plan but hasn't paid AND is on dashboard
       if ((supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && !supabaseUser.is_paid && currentRoute === '/dashboard') {
         navigate('/payment', { replace: true });
+        return;
+      }
+
+      // If user has a paid plan and is on payment page, redirect to dashboard
+      if (supabaseUser.is_paid && (supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && currentRoute === '/payment') {
+        navigate('/dashboard', { replace: true });
         return;
       }
     }

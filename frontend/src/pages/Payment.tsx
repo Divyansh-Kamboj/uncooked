@@ -4,12 +4,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { Database } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 
 const Payment = () => {
   const { user } = useAuth0();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const { refreshUser } = useAuth();
 
   // Redirect to signin if not signed in
   useEffect(() => {
@@ -26,6 +28,8 @@ const Payment = () => {
     if (!selectedPlan || !user) return;
     setLoading(true);
     try {
+      console.log('Processing payment for plan:', selectedPlan);
+      
       // Upsert user in Supabase (insert or update)
       const { error } = await supabase.from('users').upsert([
         {
@@ -36,13 +40,20 @@ const Payment = () => {
           created_at: new Date().toISOString(),
         },
       ]);
+      
       if (error) {
+        console.error('Supabase error:', error);
         alert('Payment simulation failed: ' + error.message);
       } else {
+        console.log('Payment successful, updating user data...');
         localStorage.removeItem('selectedPlan');
-        navigate('/dashboard');
+        
+        // Refresh user data to get the updated plan
+        await refreshUser();
+        console.log('User data refreshed, AuthProvider will handle navigation...');
       }
     } catch (e) {
+      console.error('Payment error:', e);
       alert('Payment simulation failed.');
     } finally {
       setLoading(false);
