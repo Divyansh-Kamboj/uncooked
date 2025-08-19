@@ -80,14 +80,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSwitchToSignUp }) => {
         </button>
       </form>
 
-      <div className="mt-4 text-center">
-        <button 
-          onClick={onSwitchToSignUp}
-          className="text-sm text-orange-600 hover:text-orange-700"
-        >
-          Don't have an account? Sign up
-        </button>
-      </div>
+
     </div>
   );
 };

@@ -162,7 +162,7 @@ const Account = () => {
             {/* Sign Out Button */}
             <div className="pt-4 border-t border-orange-200">
               <Button
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                onClick={() => logout()}
                 variant="default"
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               >

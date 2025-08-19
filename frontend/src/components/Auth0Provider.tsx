@@ -24,6 +24,9 @@ const Auth0ProviderWrapper: React.FC<Auth0ProviderWrapperProps> = ({ children })
         audience: import.meta.env.VITE_AUTH0_AUDIENCE,
         scope: 'openid profile email'
       }}
+      logoutParams={{
+        returnTo: window.location.origin
+      }}
       useRefreshTokens={true}
       cacheLocation="localstorage"
     >
