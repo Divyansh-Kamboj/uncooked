@@ -6,29 +6,54 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { User, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { User, ArrowLeft, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const Account = () => {
   const { user, logout } = useAuth0();
   const [plan, setPlan] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user) {
-      supabase
-        .from("users")
-        .select("plan")
-        .eq("id", user.id)
-        .single()
-        .then(({ data }) => setPlan(data?.plan || null));
-    }
-  }, [user]);
+    const fetchUserData = async () => {
+      if (user?.sub) {
+        try {
+          const { data, error } = await supabase
+            .from("users")
+            .select("plan, email")
+            .eq("id", user.sub)
+            .single();
+          
+          if (error) {
+            console.error('Error fetching user data:', error);
+            toast({
+              title: "Error",
+              description: "Failed to load user data",
+              variant: "destructive"
+            });
+          } else {
+            setPlan(data?.plan || null);
+          }
+        } catch (err) {
+          console.error('Error fetching user data:', err);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
 
-  if (!user) {
+    fetchUserData();
+  }, [user, toast]);
+
+  const handleResetPassword = () => {
+    // Redirect to Auth0's password reset page
+    window.location.href = `https://${import.meta.env.VITE_AUTH0_DOMAIN}/login?reset=1`;
+  };
+
+  if (!user || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
         <div className="text-xl text-orange-700">Loading...</div>
@@ -50,7 +75,7 @@ const Account = () => {
       <div className="max-w-2xl mx-auto pt-24 px-6 pb-12">
         <h1 className="text-3xl font-bold text-orange-800 mb-8">My Account</h1>
 
-        {/* P Card */}
+        {/* Profile Card */}
         <Card className="bg-white backdrop-blur-sm border-orange-200 shadow-lg">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
@@ -71,35 +96,25 @@ const Account = () => {
               <Input
                 id="email"
                 type="email"
-                value={user?.primaryEmailAddress?.emailAddress || ''}
+                value={user?.email || ''}
                 disabled
                 className="bg-gray-100 border border-gray-300"
               />
             </div>
 
-            {/* Password (masked) */}
+            {/* Reset Password */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-orange-800 font-medium">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={showPassword ? "your-actual-password" : "••••••••••••"}
-                  disabled
-                  className="bg-gray-100 border border-gray-300 pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 text-orange-600 hover:text-orange-800"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
+              <Label className="text-orange-800 font-medium">Password</Label>
+              <Button
+                onClick={handleResetPassword}
+                variant="outline"
+                className="w-full border-orange-300 text-orange-700 hover:bg-orange-50"
+              >
+                <Key className="h-4 w-4 mr-2" />
+                Reset Password
+              </Button>
               <p className="text-sm text-orange-600">
-                Password cannot be displayed
+                Click to reset your password via Auth0
               </p>
             </div>
 
@@ -112,6 +127,8 @@ const Account = () => {
                     variant={plan === 'uncooked' ? 'default' : 'secondary'}
                     className={plan === 'uncooked'
                       ? 'bg-orange-600 text-white'
+                      : plan === 'nerd'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-orange-100 text-orange-800'}
                   >
                     {plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'Free'}
@@ -155,9 +172,6 @@ const Account = () => {
                 </div>
               </div>
             </div>
-
-            {/* Member Since */}
-            {/* Member Since removed: Add back if you fetch it from Supabase */}
 
             {/* Sign Out Button */}
             <div className="pt-4 border-t border-orange-200">
