@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RotateCcw, LogOut } from "lucide-react";
 import { Button } from "../ui/button";
 import { SessionToast } from "../ui/session-toast";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface SessionControlsProps {
   onRestartSession: () => void;
@@ -27,7 +27,7 @@ export const SessionControls = ({
     showQuestionLimit: boolean;
   } | null>(null);
   
-  const { user } = useUser();
+  const { user } = useAuth0();
   const userPlan = user?.publicMetadata?.plan as string || 'free';
   
   const handleEndSession = async () => {

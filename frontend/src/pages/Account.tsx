@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useUser, useClerk } from "@clerk/clerk-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const Account = () => {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, logout } = useAuth0();
   const [plan, setPlan] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -163,7 +162,7 @@ const Account = () => {
             {/* Sign Out Button */}
             <div className="pt-4 border-t border-orange-200">
               <Button
-                onClick={() => signOut()}
+                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
                 variant="default"
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               >

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
+  const { user: auth0User, isAuthenticated, isLoading: isAuth0Loading } = useAuth0();
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const navigate = useNavigate();
@@ -103,42 +103,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Function to refresh user data
   const refreshUser = useCallback(async () => {
-    if (!clerkUser) {
+    if (!auth0User) {
       setSupabaseUser(null);
       return;
     }
 
     setIsLoadingUser(true);
-    let user = await fetchSupabaseUser(clerkUser.id);
+    let user = await fetchSupabaseUser(auth0User.sub || '');
     
     if (!user) {
-      const email = clerkUser.primaryEmailAddress?.emailAddress || '';
-      user = await createSupabaseUser(clerkUser.id, email);
+      const email = auth0User.email || '';
+      user = await createSupabaseUser(auth0User.sub || '', email);
     }
 
     setSupabaseUser(user);
     setIsLoadingUser(false);
-  }, [clerkUser]);
+  }, [auth0User]);
 
   // Handle user authentication flow
   useEffect(() => {
-    if (!isClerkLoaded) return;
+    if (isAuth0Loading) return;
 
-    if (!clerkUser) {
+    if (!isAuthenticated || !auth0User) {
       setSupabaseUser(null);
       setIsLoadingUser(false);
       return;
     }
 
     refreshUser();
-  }, [clerkUser, isClerkLoaded, refreshUser]);
+  }, [auth0User, isAuthenticated, isAuth0Loading, refreshUser]);
 
   // Handle navigation logic based on user state
   useEffect(() => {
-    if (!isClerkLoaded || isLoadingUser) return;
+    if (isAuth0Loading || isLoadingUser) return;
 
     // If user is signed in, handle plan routing
-    if (clerkUser && supabaseUser) {
+    if (isAuthenticated && auth0User && supabaseUser) {
       const currentRoute = getCurrentRoute();
       
       // Plan routing
@@ -152,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
     }
-  }, [clerkUser, supabaseUser, isLoadingUser, isClerkLoaded, navigate]);
+  }, [auth0User, supabaseUser, isLoadingUser, isAuth0Loading, isAuthenticated, navigate]);
 
   const value: AuthContextType = {
     supabaseUser,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ import type { Database } from "@/integrations/supabase/types";
 type PlanType = 'free' | 'nerd' | 'uncooked';
 
 const Pricing = () => {
-  const { user } = useUser();
+  const { user } = useAuth0();
   const { supabaseUser, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();

@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { SignIn, SignUp, useUser } from "@clerk/clerk-react";
+import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from "react-router-dom";
+import SignInForm from './auth/SignInForm';
+import SignUpForm from './auth/SignUpForm';
 
 type AuthStep = 'landing' | 'signin' | 'signup';
 
 const AuthFlow = () => {
   const [currentStep, setCurrentStep] = useState<AuthStep>('landing');
-  const { isSignedIn, isLoaded } = useUser();
+  const { isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
   // Handle user authentication state
   useEffect(() => {
-    console.log('Auth state changed:', { isLoaded, isSignedIn, currentStep });
-    if (isLoaded && isSignedIn) {
+    console.log('Auth state changed:', { isLoading, isAuthenticated, currentStep });
+    if (!isLoading && isAuthenticated) {
       // User is signed in, go directly to dashboard
       console.log('User is signed in, navigating to dashboard');
       navigate('/dashboard', { replace: true });
     }
-  }, [isSignedIn, isLoaded, navigate, currentStep]);
+  }, [isAuthenticated, isLoading, navigate, currentStep]);
 
   const handleStart = () => {
-    if (isSignedIn) {
+    if (isAuthenticated) {
       // User is already signed in, go to dashboard
       navigate('/dashboard', { replace: true });
     } else {
@@ -29,10 +31,7 @@ const AuthFlow = () => {
     }
   };
 
-  const handleSignUpClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Sign up clicked - setting step to signup');
+  const handleSignUpClick = () => {
     setCurrentStep('signup');
   };
 
@@ -91,23 +90,7 @@ const AuthFlow = () => {
               ← Back to home
             </button>
           </div>
-          <SignIn 
-            appearance={{
-              elements: {
-                card: "bg-white shadow-lg rounded-xl p-8",
-                formButtonPrimary: "bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
-              },
-            }}
-            afterSignInUrl="/dashboard"
-          />
-          <div className="mt-4 text-center">
-            <button 
-              onClick={handleSignUpClick}
-              className="text-sm text-orange-600 hover:text-orange-700"
-            >
-              Don't have an account? Sign up
-            </button>
-          </div>
+          <SignInForm onSwitchToSignUp={handleSignUpClick} />
         </div>
       </div>
     );
@@ -126,34 +109,7 @@ const AuthFlow = () => {
               ← Back to sign in
             </button>
           </div>
-          <SignUp
-            appearance={{
-              elements: {
-                card: "bg-white shadow-lg rounded-xl p-8",
-                formButtonPrimary: "bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded",
-              },
-            }}
-            afterSignUpUrl="/pricing"
-          />
-          <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500 leading-relaxed">
-              By signing up, you agree to our{" "}
-              <button 
-                onClick={() => window.open('/terms-and-conditions', '_blank')}
-                className="text-orange-600 hover:text-orange-700 underline"
-              >
-                Terms & Conditions
-              </button>{" "}
-              and{" "}
-              <button 
-                onClick={() => window.open('/privacy-policy', '_blank')}
-                className="text-orange-600 hover:text-orange-700 underline"
-              >
-                Privacy Policy
-              </button>
-              .
-            </p>
-          </div>
+          <SignUpForm onSwitchToSignIn={handleBackToSignIn} />
         </div>
       </div>
     );

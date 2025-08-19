@@ -19,7 +19,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import FAQ from "./pages/FAQ";
 import Footer from "./components/Footer";
-import { ClerkProvider } from "@clerk/clerk-react";
+import Auth0ProviderWrapper from "./components/Auth0Provider";
+import Auth0Callback from "./components/Auth0Callback";
 import { AuthProvider } from "./components/AuthProvider";
 import useTabAnimation from "./hooks/useTabAnimation";
 
@@ -36,6 +37,7 @@ const AppContent = () => {
         <div className="flex-1">
           <Routes>
             <Route path="/" element={<AuthFlow />} />
+            <Route path="/callback" element={<Auth0Callback />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/end-session" element={<EndSession />} />
             <Route path="*" element={<NotFound />} />
@@ -62,11 +64,11 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
+      <Auth0ProviderWrapper>
         <HashRouter>
           <AppContent />
         </HashRouter>
-      </ClerkProvider>
+      </Auth0ProviderWrapper>
     </TooltipProvider>
   </QueryClientProvider>
 );
