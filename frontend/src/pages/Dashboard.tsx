@@ -143,6 +143,7 @@ const Dashboard = () => {
   const handlePreviousQuestion = () => {
     setCurrentQuestion(prev => Math.max(1, prev - 1));
     setShowMarkScheme(false);
+    setShowAIExplanation(false);
   };
 
   const handleNextQuestion = async () => {
@@ -246,7 +247,7 @@ const Dashboard = () => {
         {/* Question and AI Explanation Layout */}
         <div className="flex flex-col lg:flex-row items-center gap-14 w-full max-w-[1800px] mx-auto px-4 lg:ml-12">
           {/* Question Viewer - flexible width with reasonable limits */}
-          <div className={`transition-all duration-500 ease-in-out relative ${
+          <div className={`transition-all duration-700 ease-in-out transform relative ${
             showAIExplanation 
               ? 'lg:flex-[2] lg:min-w-[500px] lg:max-w-[900px]' 
               : 'lg:flex-1 lg:max-w-6xl lg:mx-auto'
@@ -269,14 +270,16 @@ const Dashboard = () => {
           </div>
 
           {/* AI Explanation Container */}
-          {showAIExplanation && (
-            <div className="w-full lg:flex-[1] lg:min-w-[400px] lg:max-w-[600px] flex justify-center">
-              <AIExplanation 
-                isVisible={showAIExplanation} 
-                explanation={questions[currentQuestion - 1]?.ai_explanation}
-              />
-            </div>
-          )}
+          <div className={`transition-all duration-700 ease-in-out transform ${
+            showAIExplanation 
+              ? 'w-full lg:flex-[1] lg:min-w-[400px] lg:max-w-[600px] opacity-100 translate-x-0 scale-100' 
+              : 'w-0 lg:flex-[0] lg:min-w-[0px] lg:max-w-[0px] opacity-0 translate-x-full scale-95 pointer-events-none overflow-hidden'
+          } flex justify-center`}>
+            <AIExplanation 
+              isVisible={showAIExplanation} 
+              explanation={questions[currentQuestion - 1]?.ai_explanation}
+            />
+          </div>
         </div>
 
         {/* Action Buttons */}

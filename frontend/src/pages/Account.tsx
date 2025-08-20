@@ -114,7 +114,7 @@ const Account = () => {
                 Reset Password
               </Button>
               <p className="text-sm text-orange-600">
-                Click to reset your password via Auth0
+                Click to reset your password
               </p>
             </div>
 

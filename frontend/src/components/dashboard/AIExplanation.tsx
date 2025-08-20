@@ -12,17 +12,17 @@ export const AIExplanation = ({ isVisible, explanation }: AIExplanationProps) =>
   const displayText = explanation || placeholderText;
 
   return (
-    <div className={`transition-all duration-500 ease-in-out ${
+    <div className={`transition-all duration-700 ease-in-out transform ${
       isVisible 
         ? 'opacity-100 translate-x-0 scale-100' 
         : 'opacity-0 translate-x-full scale-95 pointer-events-none'
     }`}>
-      <Card className="w-full max-w-2xl p-6 bg-white/80 backdrop-blur-sm border-orange-200/50 shadow-lg">
+      <Card className="w-full max-w-2xl p-6 bg-white/80 backdrop-blur-sm border-orange-200/50 shadow-lg transform transition-all duration-500 ease-in-out hover:shadow-xl">
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-orange-800 flex items-center gap-2">
             🤖 AI Explanation
           </h3>
-          <div className="min-h-[200px] p-4 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg border border-orange-200/30">
+          <div className="min-h-[200px] p-4 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg border border-orange-200/30 transition-all duration-300 ease-in-out">
             <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
               {isVisible && <TypingAnimation text={displayText} />}
             </p>
