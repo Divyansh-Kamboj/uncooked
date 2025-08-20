@@ -65,7 +65,7 @@ def update_question_with_mark_scheme(metadata):
 # -------------------------------
 @app.get("/upload-mark-scheme")
 def upload_mark_scheme_pdf():
-    filename = "9709_m23_ms_32.pdf"  # example
+    filename = "9709_S24_ms_32.pdf"  # example
     filepath = os.path.join(PAPER_DIR, filename)
 
     doc = fitz.open(filepath)

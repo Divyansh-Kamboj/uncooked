@@ -27,7 +27,7 @@ export const QuestionsLimitPopup: React.FC<QuestionsLimitPopupProps> = ({
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="sm:max-w-[500px] bg-white border-orange-200 shadow-xl">
+      <AlertDialogContent className="sm:max-w-[500px] bg-gradient-to-r from-orange-50/80 to-yellow-50/80 border-orange-200/50 shadow-xl backdrop-blur-sm">
         <AlertDialogHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="relative">
@@ -52,13 +52,13 @@ export const QuestionsLimitPopup: React.FC<QuestionsLimitPopupProps> = ({
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="flex-1 border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400"
+            className="flex-1 bg-white/90 border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition-all duration-200"
           >
             Maybe Tomorrow
           </Button>
           <Button 
             onClick={onUpgrade}
-            className="flex-1 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            className="flex-1 bg-white/90 border-gray-300 text-gray-700 hover:bg-gradient-to-r hover:from-orange-500 hover:to-yellow-500 hover:text-white hover:border-orange-500 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Upgrade Now
