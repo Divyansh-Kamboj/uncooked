@@ -27,22 +27,22 @@ export const QuestionsLimitPopup: React.FC<QuestionsLimitPopupProps> = ({
 }) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="sm:max-w-[500px]">
+      <AlertDialogContent className="sm:max-w-[500px] bg-white border-orange-200 shadow-xl">
         <AlertDialogHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="relative">
-              <BookOpen className="h-16 w-16 text-blue-500" />
-              <Lock className="h-8 w-8 text-red-500 absolute -bottom-1 -right-1" />
+              <BookOpen className="h-16 w-16 text-orange-500" />
+              <Lock className="h-8 w-8 text-orange-600 absolute -bottom-1 -right-1" />
             </div>
           </div>
-          <AlertDialogTitle className="text-2xl font-bold text-blue-600">
+          <AlertDialogTitle className="text-2xl font-bold text-orange-800">
             Daily Limit Reached! 📚
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-base leading-relaxed">
-            You've completed all <span className="font-semibold text-blue-600">{maxQuestions} questions</span> for today on your {' '}
-            <span className="font-semibold capitalize">{planType} plan</span>.
+          <AlertDialogDescription className="text-base leading-relaxed text-gray-700">
+            You've completed all <span className="font-semibold text-orange-600">{maxQuestions} questions</span> for today on your {' '}
+            <span className="font-semibold capitalize text-orange-700">{planType} plan</span>.
             <br /><br />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-orange-600">
               Upgrade your plan to access more questions and keep your learning momentum going!
             </span>
           </AlertDialogDescription>
@@ -52,13 +52,13 @@ export const QuestionsLimitPopup: React.FC<QuestionsLimitPopupProps> = ({
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="flex-1 hover:bg-gray-50"
+            className="flex-1 border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400"
           >
             Maybe Tomorrow
           </Button>
           <Button 
             onClick={onUpgrade}
-            className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Upgrade Now
