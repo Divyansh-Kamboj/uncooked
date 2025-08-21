@@ -78,7 +78,7 @@ export const SessionToast = ({
               className={`w-full py-6 rounded-xl font-semibold text-lg ${
                 isCooked 
                   ? 'bg-red-600 hover:bg-red-700'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  : 'bg-blue-500 hover:bg-blue-600'
               }`}
             >
               Start a New Session
@@ -87,7 +87,7 @@ export const SessionToast = ({
             <Button
               variant="outline"
               onClick={handleViewStats}
-              className="w-full py-6 rounded-xl font-semibold text-lg border-2 border-gray-300"
+              className="w-full py-6 rounded-xl font-semibold text-lg border-2 border-gray-300 bg-white text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200"
             >
               View Your Stats
             </Button>
