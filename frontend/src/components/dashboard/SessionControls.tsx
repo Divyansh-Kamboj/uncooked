@@ -31,29 +31,35 @@ export const SessionControls = ({
   const userPlan = user?.publicMetadata?.plan as string || 'free';
   
   const handleEndSession = async () => {
-    const isCooked = cookedCounter >= maxCookedCount;
-    const isAiLimitReached = usedAiExplanations >= maxAiExplanations;
-    // Only show upgrade message for free plan users
-    const showUpgrade = userPlan === 'free' && (isCooked || isAiLimitReached);
+    // Determine if user is "cooked" based on plan and cooked counter
+    let isCooked = false;
+    let showUpgrade = false;
     
-    // Show toast if needed
-    if (isCooked || isAiLimitReached) {
-      setShowToast({
-        isCooked,
-        showUpgrade: userPlan === 'free' && showUpgrade, // Double check it's free plan
-        showQuestionLimit: isAiLimitReached
-      });
+    if (userPlan === 'free' || userPlan === 'nerd') {
+      // For Free and Nerd plans: check against their respective limits
+      const planLimit = userPlan === 'free' ? 5 : 10;
+      isCooked = cookedCounter >= planLimit;
+      showUpgrade = userPlan === 'free' && isCooked;
+    } else if (userPlan === 'uncooked') {
+      // For Uncooked plan: use 10 as the threshold
+      isCooked = cookedCounter >= 10;
+      showUpgrade = false; // Uncooked plan users don't need upgrade
     }
+    
+    // Always show the popup when ending session
+    setShowToast({
+      isCooked,
+      showUpgrade,
+      showQuestionLimit: false // This is for AI explanations, not session end
+    });
     
     // Call the original onEndSession with toast handler
     await onEndSession((isCooked, showUpgrade) => {
-      setShowToast({ 
-        isCooked, 
-        showUpgrade: userPlan === 'free' && showUpgrade, // Double check it's free plan
-        showQuestionLimit: false 
-      });
+      // This callback is called by the Dashboard's handleEndSession
+      // We don't need to set showToast again here since we already set it above
     });
   };
+  
   return (
     <>
       {/* Restart Session Button */}

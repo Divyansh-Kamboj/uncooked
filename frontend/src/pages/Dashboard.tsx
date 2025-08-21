@@ -175,13 +175,9 @@ const Dashboard = () => {
   };
 
   const handleEndSession = async (showToast: (isCooked: boolean, showUpgrade?: boolean) => void) => {
-    const isCooked = limitStatus.aiExplanationsLimitReached;
-    const showUpgrade = userPlan === 'free' && isCooked;
-    
-    // Show toast if needed
-    if (isCooked) {
-      showToast(isCooked, showUpgrade);
-    }
+    // The SessionControls component now handles the popup logic
+    // This function is called after the popup is already shown
+    // We can add any additional session ending logic here if needed
     
     // For now, we'll just return a resolved promise
     return Promise.resolve();

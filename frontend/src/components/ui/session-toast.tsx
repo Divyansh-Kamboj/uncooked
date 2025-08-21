@@ -24,8 +24,8 @@ export const SessionToast = ({
   
   const handleViewStats = () => {
     onViewStats();
-    // For now, just navigate to a placeholder stats page
-    navigate('/stats');
+    // For now, navigate to dashboard (stats page not implemented yet)
+    navigate('/dashboard');
   };
 
   return (
