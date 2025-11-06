@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import AuthFlow from "./components/AuthFlow";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
@@ -61,15 +62,17 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <Auth0ProviderWrapper>
-        <HashRouter>
-          <AppContent />
-        </HashRouter>
-      </Auth0ProviderWrapper>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <Auth0ProviderWrapper>
+          <HashRouter>
+            <AppContent />
+          </HashRouter>
+        </Auth0ProviderWrapper>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

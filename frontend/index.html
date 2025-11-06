@@ -7,6 +7,16 @@
     <meta name="description" content="Master A Level Mathematics with AI-powered explanations and gamified learning" />
     <meta name="author" content="Uncooked" />
     
+    <!-- Prevent theme flash - force light mode -->
+    <script>
+      // Prevent flash of dark theme by ensuring light mode is set before React loads
+      (function() {
+        const html = document.documentElement;
+        html.classList.remove('dark');
+        html.style.colorScheme = 'light';
+      })();
+    </script>
+    
     <!-- Fire emoji favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     
