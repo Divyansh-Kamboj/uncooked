@@ -7,29 +7,62 @@
     <meta name="description" content="Master A Level Mathematics with AI-powered explanations and gamified learning" />
     <meta name="author" content="Uncooked" />
     
-    <!-- Prevent theme flash - force light mode -->
+    <!-- Prevent theme flash - force light mode with debugging -->
     <script>
       // Prevent flash of dark theme by ensuring light mode is set before React loads
       (function() {
         const html = document.documentElement;
+        console.log('[THEME DEBUG] Initial state:', {
+          hasDarkClass: html.classList.contains('dark'),
+          classes: html.className,
+          colorScheme: html.style.colorScheme
+        });
+        
         // Remove dark class immediately and prevent it from being added
         html.classList.remove('dark');
         html.style.colorScheme = 'light';
         
         // Clear any theme preference from localStorage that might cause issues
         try {
+          const oldTheme = localStorage.getItem('theme');
+          const oldNextThemes = localStorage.getItem('next-themes');
+          console.log('[THEME DEBUG] Clearing localStorage:', { oldTheme, oldNextThemes });
           localStorage.removeItem('theme');
           localStorage.removeItem('next-themes');
         } catch (e) {
-          // Ignore localStorage errors
+          console.error('[THEME DEBUG] localStorage error:', e);
         }
+        
+        // Track what's adding the dark class
+        let darkClassAddedCount = 0;
+        const stackTraces = [];
         
         // Prevent next-themes from applying dark mode by watching for class changes
         const observer = new MutationObserver(function(mutations) {
           mutations.forEach(function(mutation) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
               if (html.classList.contains('dark')) {
+                darkClassAddedCount++;
+                const stackTrace = new Error().stack;
+                stackTraces.push({
+                  count: darkClassAddedCount,
+                  timestamp: new Date().toISOString(),
+                  stack: stackTrace,
+                  oldValue: mutation.oldValue,
+                  newValue: html.className
+                });
+                
+                console.warn('[THEME DEBUG] ⚠️ Dark class detected!', {
+                  count: darkClassAddedCount,
+                  timestamp: new Date().toISOString(),
+                  oldValue: mutation.oldValue,
+                  newValue: html.className,
+                  stack: stackTrace
+                });
+                
+                // Remove it immediately
                 html.classList.remove('dark');
+                console.log('[THEME DEBUG] ✅ Dark class removed');
               }
             }
           });
@@ -38,8 +71,22 @@
         // Start observing immediately
         observer.observe(html, {
           attributes: true,
-          attributeFilter: ['class']
+          attributeFilter: ['class'],
+          attributeOldValue: true
         });
+        
+        // Log summary after a delay
+        setTimeout(function() {
+          console.log('[THEME DEBUG] Summary after 3 seconds:', {
+            darkClassAddedCount: darkClassAddedCount,
+            currentClasses: html.className,
+            hasDarkClass: html.classList.contains('dark'),
+            stackTraces: stackTraces
+          });
+        }, 3000);
+        
+        // Also log when React might be loading
+        console.log('[THEME DEBUG] Script loaded, watching for dark class additions...');
       })();
     </script>
     
