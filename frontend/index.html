@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" suppressHydrationWarning>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,8 +12,34 @@
       // Prevent flash of dark theme by ensuring light mode is set before React loads
       (function() {
         const html = document.documentElement;
+        // Remove dark class immediately and prevent it from being added
         html.classList.remove('dark');
         html.style.colorScheme = 'light';
+        
+        // Clear any theme preference from localStorage that might cause issues
+        try {
+          localStorage.removeItem('theme');
+          localStorage.removeItem('next-themes');
+        } catch (e) {
+          // Ignore localStorage errors
+        }
+        
+        // Prevent next-themes from applying dark mode by watching for class changes
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+              if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+              }
+            }
+          });
+        });
+        
+        // Start observing immediately
+        observer.observe(html, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
       })();
     </script>
     
