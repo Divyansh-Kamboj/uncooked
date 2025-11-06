@@ -87,6 +87,49 @@
         
         // Also log when React might be loading
         console.log('[THEME DEBUG] Script loaded, watching for dark class additions...');
+        
+        // Monitor CSS variable changes
+        const body = document.body;
+        let lastBackground = getComputedStyle(body).backgroundColor;
+        let lastForeground = getComputedStyle(body).color;
+        let cssVarBackground = getComputedStyle(document.documentElement).getPropertyValue('--background');
+        
+        console.log('[THEME DEBUG] Initial CSS values:', {
+          bodyBackground: lastBackground,
+          bodyForeground: lastForeground,
+          cssVarBackground: cssVarBackground,
+          htmlBackground: getComputedStyle(document.documentElement).backgroundColor
+        });
+        
+        // Watch for CSS variable changes
+        const cssObserver = new MutationObserver(function() {
+          const newBackground = getComputedStyle(body).backgroundColor;
+          const newForeground = getComputedStyle(body).color;
+          const newCssVarBackground = getComputedStyle(document.documentElement).getPropertyValue('--background');
+          
+          if (newBackground !== lastBackground || newCssVarBackground !== cssVarBackground) {
+            console.warn('[THEME DEBUG] ⚠️ CSS Variable/Background changed!', {
+              oldBodyBackground: lastBackground,
+              newBodyBackground: newBackground,
+              oldCssVarBackground: cssVarBackground,
+              newCssVarBackground: newCssVarBackground,
+              stack: new Error().stack
+            });
+            lastBackground = newBackground;
+            cssVarBackground = newCssVarBackground;
+          }
+        });
+        
+        cssObserver.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class', 'style'],
+          subtree: true
+        });
+        
+        cssObserver.observe(body, {
+          attributes: true,
+          attributeFilter: ['class', 'style']
+        });
       })();
     </script>
     
