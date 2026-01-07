@@ -149,11 +149,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // User exists in Supabase - handle routing based on their plan status
     const currentPath = location.pathname;
 
-    // If user hasn't selected a plan yet (plan is null), redirect to pricing
-    if (supabaseUser.plan === null && currentPath !== '/pricing') {
-      navigate('/pricing', { replace: true });
-      return;
-    }
+    // NOTE: We used to unconditionally redirect users with no plan to
+    // `/pricing`. That made it impossible to show the Title page first and
+    // also forced existing users into the pricing flow on sign-in. The new
+    // behavior keeps the App responsible for navigating to `/pricing` only
+    // when explicitly requested (e.g. after first-time signup or an Upgrade
+    // button click). Do not auto-redirect here.
 
     // If user has selected a plan but it's 'free', they can access dashboard
     if (supabaseUser.plan === 'free' && currentPath === '/pricing') {

@@ -6,14 +6,28 @@ const Index = () => {
   const { isSignedIn } = useUser();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isSignedIn) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [isSignedIn, navigate]);
-
+  // Always render the Title/Landing page first. Clicking "click to start"
+  // decides whether to jump straight to dashboard (returning session) or go
+  // through the sign-in flow.
   const handleStart = () => {
-    navigate("/signin");
+    // Heuristic: prefer Clerk's session state, but also check localStorage
+    // tokens that may indicate a persistent sign-in on this device.
+    const hasLocalToken = !!(
+      localStorage.getItem('clerk_js_session') ||
+      localStorage.getItem('clerk-session') ||
+      localStorage.getItem('selectedPlan')
+    );
+
+    const hasToken = isSignedIn || hasLocalToken;
+
+    if (hasToken) {
+      // Mark that this navigation is a "returning session" so Dashboard
+      // can show the returning upgrade modal once per visit.
+      try { sessionStorage.setItem('returningSession', 'true'); } catch(e) {}
+      navigate('/dashboard');
+    } else {
+      navigate('/signin');
+    }
   };
 
   return (
