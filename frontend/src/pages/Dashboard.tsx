@@ -12,6 +12,7 @@ import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { usePlanLimits } from "@/hooks/usePlanLimits";
 import { CookedLimitPopup } from "@/components/popups/CookedLimitPopup";
 import { QuestionsLimitPopup } from "@/components/popups/QuestionsLimitPopup";
+import UpgradeModal from "@/components/ui/UpgradeModal";
 import { useToast } from "@/hooks/use-toast";
 import { SessionToast } from "@/components/ui/session-toast";
 
@@ -55,6 +56,7 @@ const Dashboard = () => {
   // Popup states
   const [showCookedLimitPopup, setShowCookedLimitPopup] = useState(false);
   const [showQuestionsLimitPopup, setShowQuestionsLimitPopup] = useState(false);
+  const [upgradeModal, setUpgradeModal] = useState<{ isOpen: boolean; mode: 'returning' | 'limit' | null; limitType?: 'questions' | 'ai' | null }>({ isOpen: false, mode: null });
   
   const [filters, setFilters] = useState({
     subject: "",
@@ -82,7 +84,7 @@ const Dashboard = () => {
   const handleSubmit = async () => {
     // Check if user has reached daily question limit before loading paper
     if (limitStatus.questionsLimitReached) {
-      setShowQuestionsLimitPopup(true);
+      setUpgradeModal({ isOpen: true, mode: 'limit', limitType: 'questions' });
       return;
     }
 
@@ -110,40 +112,32 @@ const Dashboard = () => {
   const handleAIExplanation = async () => {
     // Check if user has reached AI explanation limit
     if (limitStatus.aiExplanationsLimitReached) {
-      setShowCookedLimitPopup(true);
-      return false;
+      setUpgradeModal({ isOpen: true, mode: 'limit', limitType: 'ai' });
+      return;
     }
 
-    try {
-      // Increment AI explanation usage
-      const success = await incrementAIExplanations();
-      if (!success) {
-        toast({
-          title: "Error",
-          description: "Failed to track AI explanation usage",
-          variant: "destructive"
-        });
-        return false;
-      }
-
-      setShowAIExplanation(true);
-      
+    // Increment AI explanation usage
+    const success = await incrementAIExplanations();
+    if (!success) {
       toast({
-        title: "🔥 You're getting cooked!",
-        description: `AI explanations remaining: ${limitStatus.aiExplanationsRemaining === -1 ? "Unlimited" : limitStatus.aiExplanationsRemaining - 1}`
+        title: "Error",
+        description: "Failed to track AI explanation usage",
+        variant: "destructive"
       });
-      
-      return true;
-    } catch (error) {
-      console.error("Error in handleAIExplanation:", error);
-      return false;
+      return;
     }
+
+    setShowAIExplanation(true);
+    
+    toast({
+      title: "🔥 You're getting cooked!",
+      description: `AI explanations remaining: ${limitStatus.aiExplanationsRemaining === -1 ? "Unlimited" : limitStatus.aiExplanationsRemaining - 1}`
+    });
   };
 
   const handlePreviousQuestion = () => {
     setCurrentQuestion(prev => Math.max(1, prev - 1));
     setShowMarkScheme(false);
-    setShowAIExplanation(false);
   };
 
   const handleNextQuestion = async () => {
@@ -153,7 +147,7 @@ const Dashboard = () => {
     if (nextQuestionIndex <= questions.length) {
       // Check limits before allowing navigation to next question
       if (limitStatus.questionsLimitReached) {
-        setShowQuestionsLimitPopup(true);
+        setUpgradeModal({ isOpen: true, mode: 'limit', limitType: 'questions' });
         return;
       }
 
@@ -175,9 +169,13 @@ const Dashboard = () => {
   };
 
   const handleEndSession = async (showToast: (isCooked: boolean, showUpgrade?: boolean) => void) => {
-    // The SessionControls component now handles the popup logic
-    // This function is called after the popup is already shown
-    // We can add any additional session ending logic here if needed
+    const isCooked = limitStatus.aiExplanationsLimitReached;
+    const showUpgrade = userPlan === 'free' && isCooked;
+    
+    // Show toast if needed
+    if (isCooked) {
+      showToast(isCooked, showUpgrade);
+    }
     
     // For now, we'll just return a resolved promise
     return Promise.resolve();
@@ -200,8 +198,26 @@ const Dashboard = () => {
 
   // Handle upgrade navigation
   const handleUpgrade = () => {
+    // Mark that the user explicitly chose to upgrade from the modal
+    try { localStorage.setItem('fromUpgradeModal', 'true'); } catch(e) {}
     navigate('/pricing');
   };
+
+  // On initial mount: if this navigation was flagged as a returning session
+  // (set by Index.tsx on "Click to Start"), show the returning modal once
+  useEffect(() => {
+    try {
+      const returningSession = sessionStorage.getItem('returningSession');
+      const alreadyShown = sessionStorage.getItem('returningPromptShown');
+      if (returningSession === 'true' && !alreadyShown && supabaseUser) {
+        setUpgradeModal({ isOpen: true, mode: 'returning' });
+        sessionStorage.setItem('returningPromptShown', 'true');
+        // Clear the session marker so subsequent non-start navigations don't trigger
+        sessionStorage.removeItem('returningSession');
+      }
+    } catch (e) {}
+  // supabaseUser indicates a signed-in returning visitor
+  }, [supabaseUser]);
 
   // Handle continue without explanations
   const handleContinueWithoutExplanations = () => {
@@ -222,8 +238,20 @@ const Dashboard = () => {
     }
   }, [location.state, location.pathname, navigate, handleRestartSession]);
 
+  // Show loading if user data is still being fetched
+  if (isLoadingUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6 relative">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6">
       {/* Header Section */}
       <HeaderSection 
         cookedCounter={limitStatus.aiExplanationsUsed}
@@ -243,7 +271,7 @@ const Dashboard = () => {
         {/* Question and AI Explanation Layout */}
         <div className="flex flex-col lg:flex-row items-center gap-14 w-full max-w-[1800px] mx-auto px-4 lg:ml-12">
           {/* Question Viewer - flexible width with reasonable limits */}
-          <div className={`transition-all duration-700 ease-in-out transform relative ${
+          <div className={`transition-all duration-500 ease-in-out ${
             showAIExplanation 
               ? 'lg:flex-[2] lg:min-w-[500px] lg:max-w-[900px]' 
               : 'lg:flex-1 lg:max-w-6xl lg:mx-auto'
@@ -257,25 +285,17 @@ const Dashboard = () => {
               questions={questions}
               totalQuestions={questions.length}
             />
-            {isLoadingUser && (
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-white/90 px-4 py-2 rounded-full shadow-md">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
-                <span className="text-sm font-medium text-gray-700">Loading question...</span>
-              </div>
-            )}
           </div>
 
           {/* AI Explanation Container */}
-          <div className={`transition-all duration-700 ease-in-out transform ${
-            showAIExplanation 
-              ? 'w-full lg:flex-[1] lg:min-w-[400px] lg:max-w-[600px] opacity-100 translate-x-0 scale-100' 
-              : 'w-0 lg:flex-[0] lg:min-w-[0px] lg:max-w-[0px] opacity-0 translate-x-full scale-95 pointer-events-none overflow-hidden'
-          } flex justify-center`}>
-            <AIExplanation 
-              isVisible={showAIExplanation} 
-              explanation={questions[currentQuestion - 1]?.ai_explanation}
-            />
-          </div>
+          {showAIExplanation && (
+            <div className="w-full lg:flex-[1] lg:min-w-[400px] lg:max-w-[600px] flex justify-center">
+              <AIExplanation 
+                isVisible={showAIExplanation} 
+                explanation={questions[currentQuestion - 1]?.ai_explanation}
+              />
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -315,6 +335,14 @@ const Dashboard = () => {
         onUpgrade={handleUpgrade}
         planType={userPlan}
         maxQuestions={planLimits.dailyQuestions}
+      />
+
+      <UpgradeModal
+        isOpen={upgradeModal.isOpen}
+        mode={upgradeModal.mode}
+        limitType={upgradeModal.limitType}
+        onClose={() => setUpgradeModal({ isOpen: false, mode: null })}
+        onUpgrade={handleUpgrade}
       />
     </div>
   );

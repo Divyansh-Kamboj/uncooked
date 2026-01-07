@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useUser } from '@clerk/clerk-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -31,22 +31,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user: auth0User, isAuthenticated, isLoading: isAuth0Loading } = useAuth0();
+  const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const getCurrentRoute = (): string => {
-    // For HashRouter, we should always use the hash
-    const hash = window.location.hash;
-    if (hash && hash.startsWith('#')) {
-      const route = hash.slice(1);
-      return route || '/';
-    }
-    // Fallback for environments where location.hash is not set yet
-    return location.pathname || '/';
-  };
 
   // Function to fetch user from Supabase
   const fetchSupabaseUser = async (userId: string): Promise<SupabaseUser | null> => {
@@ -59,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         if (error.code === 'PGRST116') {
+          // User not found - this is expected for new users
           return null;
         }
         console.error('Error fetching user from Supabase:', error);
@@ -81,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           {
             id: userId,
             email: email,
-            plan: null,
+            plan: null, // Will be set on pricing page
             is_paid: false,
             created_at: new Date().toISOString(),
           },
@@ -103,63 +93,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Function to refresh user data
   const refreshUser = useCallback(async () => {
-    if (!auth0User) {
+    if (!clerkUser) {
       setSupabaseUser(null);
       return;
     }
 
     setIsLoadingUser(true);
-    let user = await fetchSupabaseUser(auth0User.sub || '');
+    let user = await fetchSupabaseUser(clerkUser.id);
     
+    // If user doesn't exist in Supabase, create them
     if (!user) {
-      const email = auth0User.email || '';
-      user = await createSupabaseUser(auth0User.sub || '', email);
+      const email = clerkUser.primaryEmailAddress?.emailAddress || '';
+      user = await createSupabaseUser(clerkUser.id, email);
     }
 
     setSupabaseUser(user);
     setIsLoadingUser(false);
-  }, [auth0User]);
+  }, [clerkUser]);
 
   // Handle user authentication flow
   useEffect(() => {
-    if (isAuth0Loading) return;
+    if (!isClerkLoaded) return;
 
-    if (!isAuthenticated || !auth0User) {
+    if (!clerkUser) {
+      // User is not signed in
       setSupabaseUser(null);
       setIsLoadingUser(false);
       return;
     }
 
+    // User is signed in, sync with Supabase
     refreshUser();
-  }, [auth0User, isAuthenticated, isAuth0Loading, refreshUser]);
+  }, [clerkUser, isClerkLoaded, refreshUser]);
 
   // Handle navigation logic based on user state
   useEffect(() => {
-    if (isAuth0Loading || isLoadingUser) return;
+    if (!isClerkLoaded || isLoadingUser) return;
 
-    // If user is signed in, handle plan routing
-    if (isAuthenticated && auth0User && supabaseUser) {
-      const currentRoute = getCurrentRoute();
-      
-      // Plan routing
-      if (supabaseUser.plan === null && currentRoute !== '/pricing' && currentRoute !== '/payment') {
-        navigate('/pricing', { replace: true });
-        return;
+    // If user is not signed in, allow them to access public routes
+    if (!clerkUser) {
+      const publicRoutes = ['/', '/signin', '/signup', '/reset-password'];
+      if (!publicRoutes.includes(location.pathname)) {
+        navigate('/signin', { replace: true });
       }
-
-      // Only redirect to payment if user has a plan but hasn't paid AND is on dashboard
-      if ((supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && !supabaseUser.is_paid && currentRoute === '/dashboard') {
-        navigate('/payment', { replace: true });
-        return;
-      }
-
-      // If user has a paid plan and is on payment page, redirect to dashboard
-      if (supabaseUser.is_paid && (supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && currentRoute === '/payment') {
-        navigate('/dashboard', { replace: true });
-        return;
-      }
+      return;
     }
-  }, [auth0User, supabaseUser, isLoadingUser, isAuth0Loading, isAuthenticated, navigate]);
+
+    // User is signed in but doesn't have a Supabase user record
+    if (!supabaseUser) {
+      // This shouldn't happen with our sync logic, but handle gracefully
+      console.warn('Clerk user exists but no Supabase user found');
+      return;
+    }
+
+    // User exists in Supabase - handle routing based on their plan status
+    const currentPath = location.pathname;
+
+    // NOTE: We used to unconditionally redirect users with no plan to
+    // `/pricing`. That made it impossible to show the Title page first and
+    // also forced existing users into the pricing flow on sign-in. The new
+    // behavior keeps the App responsible for navigating to `/pricing` only
+    // when explicitly requested (e.g. after first-time signup or an Upgrade
+    // button click). Do not auto-redirect here.
+
+    // If user has selected a plan but it's 'free', they can access dashboard
+    if (supabaseUser.plan === 'free' && currentPath === '/pricing') {
+      // Don't redirect away from pricing if they want to upgrade
+      return;
+    }
+
+    // If user has a paid plan but hasn't paid yet, and tries to access dashboard
+    if ((supabaseUser.plan === 'nerd' || supabaseUser.plan === 'uncooked') && 
+        !supabaseUser.is_paid && 
+        currentPath === '/dashboard') {
+      navigate('/payment', { replace: true });
+      return;
+    }
+
+  }, [clerkUser, supabaseUser, isLoadingUser, isClerkLoaded, location.pathname, navigate]);
 
   const value: AuthContextType = {
     supabaseUser,
