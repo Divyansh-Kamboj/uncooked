@@ -12,6 +12,7 @@ import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { usePlanLimits } from "@/hooks/usePlanLimits";
 import { CookedLimitPopup } from "@/components/popups/CookedLimitPopup";
 import { QuestionsLimitPopup } from "@/components/popups/QuestionsLimitPopup";
+import UpgradeModal from "@/components/ui/UpgradeModal";
 import { useToast } from "@/hooks/use-toast";
 import { SessionToast } from "@/components/ui/session-toast";
 
@@ -55,6 +56,7 @@ const Dashboard = () => {
   // Popup states
   const [showCookedLimitPopup, setShowCookedLimitPopup] = useState(false);
   const [showQuestionsLimitPopup, setShowQuestionsLimitPopup] = useState(false);
+  const [upgradeModal, setUpgradeModal] = useState<{ isOpen: boolean; mode: 'returning' | 'limit' | null; limitType?: 'questions' | 'ai' | null }>({ isOpen: false, mode: null });
   
   const [filters, setFilters] = useState({
     subject: "",
@@ -82,7 +84,7 @@ const Dashboard = () => {
   const handleSubmit = async () => {
     // Check if user has reached daily question limit before loading paper
     if (limitStatus.questionsLimitReached) {
-      setShowQuestionsLimitPopup(true);
+      setUpgradeModal({ isOpen: true, mode: 'limit', limitType: 'questions' });
       return;
     }
 
@@ -110,7 +112,7 @@ const Dashboard = () => {
   const handleAIExplanation = async () => {
     // Check if user has reached AI explanation limit
     if (limitStatus.aiExplanationsLimitReached) {
-      setShowCookedLimitPopup(true);
+      setUpgradeModal({ isOpen: true, mode: 'limit', limitType: 'ai' });
       return;
     }
 
@@ -145,7 +147,7 @@ const Dashboard = () => {
     if (nextQuestionIndex <= questions.length) {
       // Check limits before allowing navigation to next question
       if (limitStatus.questionsLimitReached) {
-        setShowQuestionsLimitPopup(true);
+        setUpgradeModal({ isOpen: true, mode: 'limit', limitType: 'questions' });
         return;
       }
 
@@ -196,8 +198,26 @@ const Dashboard = () => {
 
   // Handle upgrade navigation
   const handleUpgrade = () => {
+    // Mark that the user explicitly chose to upgrade from the modal
+    try { localStorage.setItem('fromUpgradeModal', 'true'); } catch(e) {}
     navigate('/pricing');
   };
+
+  // On initial mount: if this navigation was flagged as a returning session
+  // (set by Index.tsx on "Click to Start"), show the returning modal once
+  useEffect(() => {
+    try {
+      const returningSession = sessionStorage.getItem('returningSession');
+      const alreadyShown = sessionStorage.getItem('returningPromptShown');
+      if (returningSession === 'true' && !alreadyShown && supabaseUser) {
+        setUpgradeModal({ isOpen: true, mode: 'returning' });
+        sessionStorage.setItem('returningPromptShown', 'true');
+        // Clear the session marker so subsequent non-start navigations don't trigger
+        sessionStorage.removeItem('returningSession');
+      }
+    } catch (e) {}
+  // supabaseUser indicates a signed-in returning visitor
+  }, [supabaseUser]);
 
   // Handle continue without explanations
   const handleContinueWithoutExplanations = () => {
@@ -315,6 +335,14 @@ const Dashboard = () => {
         onUpgrade={handleUpgrade}
         planType={userPlan}
         maxQuestions={planLimits.dailyQuestions}
+      />
+
+      <UpgradeModal
+        isOpen={upgradeModal.isOpen}
+        mode={upgradeModal.mode}
+        limitType={upgradeModal.limitType}
+        onClose={() => setUpgradeModal({ isOpen: false, mode: null })}
+        onUpgrade={handleUpgrade}
       />
     </div>
   );
