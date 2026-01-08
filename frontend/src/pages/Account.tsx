@@ -55,14 +55,14 @@ const Account = () => {
 
   if (!user || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#fff6e8] flex items-center justify-center">
         <div className="text-xl text-orange-700">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#fff6e8]">
       <Button
         variant="ghost"
         onClick={() => navigate('/dashboard')}

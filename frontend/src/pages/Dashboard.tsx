@@ -223,83 +223,71 @@ const Dashboard = () => {
   }, [location.state, location.pathname, navigate, handleRestartSession]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50 p-6 relative">
-      {/* Header Section */}
-      <HeaderSection 
-        cookedCounter={limitStatus.aiExplanationsUsed}
-        userPlan={userPlan}
-        progressBarColor={progressBarColor}
-      />
-
-      {/* Filter Bar */}
-      <FilterBar 
-        filters={filters}
-        setFilters={setFilters}
-        onSubmit={handleSubmit}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex flex-col items-center space-y-8">
-        {/* Question and AI Explanation Layout */}
-        <div className="flex flex-col lg:flex-row items-center gap-14 w-full max-w-[1800px] mx-auto px-4 lg:ml-12">
-          {/* Question Viewer - flexible width with reasonable limits */}
-          <div className={`transition-all duration-700 ease-in-out transform relative ${
-            showAIExplanation 
-              ? 'lg:flex-[2] lg:min-w-[500px] lg:max-w-[900px]' 
-              : 'lg:flex-1 lg:max-w-6xl lg:mx-auto'
-          } w-full flex justify-center`}>
-            <QuestionViewer 
-              paperLoaded={paperLoaded}
-              currentQuestion={currentQuestion}
-              showMarkScheme={showMarkScheme}
-              onPreviousQuestion={handlePreviousQuestion}
-              onNextQuestion={handleNextQuestion}
-              questions={questions}
-              totalQuestions={questions.length}
-            />
-            {isLoadingUser && (
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-white/90 px-4 py-2 rounded-full shadow-md">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
-                <span className="text-sm font-medium text-gray-700">Loading question...</span>
-              </div>
-            )}
-          </div>
-
-          {/* AI Explanation Container */}
-          <div className={`transition-all duration-700 ease-in-out transform ${
-            showAIExplanation 
-              ? 'w-full lg:flex-[1] lg:min-w-[400px] lg:max-w-[600px] opacity-100 translate-x-0 scale-100' 
-              : 'w-0 lg:flex-[0] lg:min-w-[0px] lg:max-w-[0px] opacity-0 translate-x-full scale-95 pointer-events-none overflow-hidden'
-          } flex justify-center`}>
-            <AIExplanation 
-              isVisible={showAIExplanation} 
-              explanation={questions[currentQuestion - 1]?.ai_explanation}
-            />
+    <div className="min-h-screen bg-[#fff6e8] p-6">
+      {/* Header: centered logo, right cooked counter */}
+      <div className="max-w-[1200px] mx-auto flex items-center justify-between py-6">
+        <div className="flex items-center justify-start w-1/3">
+          {/* left spacer */}
+        </div>
+        <div className="text-center w-1/3">
+          <h1 className="text-2xl font-extrabold text-[#d35400]">Uncooked <span className="text-xl">🔥</span></h1>
+        </div>
+        <div className="flex items-center justify-end w-1/3 space-x-4">
+          <div className="text-sm text-[#c24100]">Cooked Counter</div>
+          <div className="w-48 bg-white rounded-full overflow-hidden border border-orange-200 h-4">
+            <div className="h-4 bg-gradient-to-r from-yellow-300 to-orange-500" style={{ width: `${Math.min((limitStatus.aiExplanationsUsed / Math.max(planLimits.aiExplanations || 1,1)) * 100, 100)}%` }} />
           </div>
         </div>
-
-        {/* Action Buttons */}
-        <ActionButtons 
-          paperLoaded={paperLoaded}
-          showMarkScheme={showMarkScheme}
-          onToggleMarkScheme={() => setShowMarkScheme(!showMarkScheme)}
-          onAIExplanation={handleAIExplanation}
-          aiExplanationDisabled={limitStatus.aiExplanationsLimitReached}
-          aiExplanationsRemaining={limitStatus.aiExplanationsRemaining}
-        />
       </div>
 
-      {/* Session Controls */}
-      <SessionControls 
-        onRestartSession={handleRestartSession}
-        onEndSession={handleEndSession}
-        cookedCounter={limitStatus.aiExplanationsUsed}
-        maxCookedCount={planLimits.aiExplanations}
-        usedAiExplanations={limitStatus.aiExplanationsUsed}
-        maxAiExplanations={planLimits.aiExplanations}
-      />
+      {/* Filter bar */}
+      <div className="max-w-[1200px] mx-auto bg-white rounded-xl p-4 shadow-sm border border-orange-100 flex gap-4 items-center">
+        <select className="rounded-md border border-gray-200 px-3 py-2 bg-white">
+          <option>Paper(s)</option>
+        </select>
+        <select className="rounded-md border border-gray-200 px-3 py-2 bg-white">
+          <option>Year(s)</option>
+        </select>
+        <select className="rounded-md border border-gray-200 px-3 py-2 bg-white">
+          <option>Topic(s)</option>
+        </select>
+        <select className="rounded-md border border-gray-200 px-3 py-2 bg-white">
+          <option>Season(s)</option>
+        </select>
+        <select className="rounded-md border border-gray-200 px-3 py-2 bg-white">
+          <option>Difficulty</option>
+        </select>
+        <div className="ml-auto">
+          <button onClick={handleSubmit} className="bg-[#e65a26] hover:bg-[#d14f1f] text-white px-4 py-2 rounded-md">🔍</button>
+        </div>
+      </div>
 
-      {/* Limit Popups */}
+      {/* Main centered card */}
+      <div className="max-w-[1200px] mx-auto mt-8">
+        <div className="border-8 border-[#d46a00] rounded-2xl p-6">
+          <div className="bg-white rounded-md h-64 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-6xl">📚</div>
+              <h2 className="text-2xl font-bold text-[#8b2e00]">Ready to Cook! 🔥</h2>
+              <p className="text-sm text-gray-600 mt-2">Select your paper criteria above to load questions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer controls */}
+      <div className="max-w-[1200px] mx-auto mt-8 flex items-center justify-between">
+        <button onClick={handleRestartSession} className="bg-white border border-orange-200 rounded-full px-4 py-2">Restart Session</button>
+
+        <div className="flex gap-4">
+          <button className="bg-[#f6a57a] rounded-full px-4 py-2">Mark Scheme</button>
+          <button className="bg-[#f6b69a] rounded-full px-4 py-2">AI Explanation</button>
+        </div>
+
+        <button onClick={() => navigate('/end-session')} className="bg-white border border-orange-200 rounded-full px-4 py-2">End Session</button>
+      </div>
+
+      {/* Keep existing popups mounted for functionality */}
       <CookedLimitPopup
         isOpen={showCookedLimitPopup}
         onClose={() => setShowCookedLimitPopup(false)}
