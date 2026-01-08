@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
+  const { user: auth0User, isLoading: isAuth0Loading, isAuthenticated } = useAuth0();
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const navigate = useNavigate();
@@ -93,29 +93,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Function to refresh user data
   const refreshUser = useCallback(async () => {
-    if (!clerkUser) {
+    if (!isAuthenticated || !auth0User) {
       setSupabaseUser(null);
       return;
     }
 
     setIsLoadingUser(true);
-    let user = await fetchSupabaseUser(clerkUser.id);
+    const userId = auth0User.sub as string;
+    let user = await fetchSupabaseUser(userId);
     
     // If user doesn't exist in Supabase, create them
     if (!user) {
-      const email = clerkUser.primaryEmailAddress?.emailAddress || '';
-      user = await createSupabaseUser(clerkUser.id, email);
+      const email = (auth0User.email as string) || '';
+      user = await createSupabaseUser(userId, email);
     }
 
     setSupabaseUser(user);
     setIsLoadingUser(false);
-  }, [clerkUser]);
+  }, [isAuthenticated, auth0User]);
 
   // Handle user authentication flow
   useEffect(() => {
-    if (!isClerkLoaded) return;
+    if (isAuth0Loading) return;
 
-    if (!clerkUser) {
+    if (!isAuthenticated || !auth0User) {
       // User is not signed in
       setSupabaseUser(null);
       setIsLoadingUser(false);
@@ -124,14 +125,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // User is signed in, sync with Supabase
     refreshUser();
-  }, [clerkUser, isClerkLoaded, refreshUser]);
+  }, [auth0User, isAuth0Loading, isAuthenticated, refreshUser]);
 
   // Handle navigation logic based on user state
   useEffect(() => {
-    if (!isClerkLoaded || isLoadingUser) return;
+    if (isAuth0Loading || isLoadingUser) return;
 
     // If user is not signed in, allow them to access public routes
-    if (!clerkUser) {
+    if (!isAuthenticated || !auth0User) {
       const publicRoutes = ['/', '/signin', '/signup', '/reset-password'];
       if (!publicRoutes.includes(location.pathname)) {
         navigate('/signin', { replace: true });
@@ -142,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // User is signed in but doesn't have a Supabase user record
     if (!supabaseUser) {
       // This shouldn't happen with our sync logic, but handle gracefully
-      console.warn('Clerk user exists but no Supabase user found');
+      console.warn('Auth0 user exists but no Supabase user found');
       return;
     }
 
