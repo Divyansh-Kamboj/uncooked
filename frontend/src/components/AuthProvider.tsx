@@ -110,7 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setIsLoadingUser(true);
     let user = await fetchSupabaseUser(auth0User.sub || '');
-    
+
     if (!user) {
       const email = auth0User.email || '';
       user = await createSupabaseUser(auth0User.sub || '', email);
@@ -140,9 +140,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // If user is signed in, handle plan routing
     if (isAuthenticated && auth0User && supabaseUser) {
       const currentRoute = getCurrentRoute();
-      
+
       // Plan routing
-      if (supabaseUser.plan === null && currentRoute !== '/pricing' && currentRoute !== '/payment') {
+      if (supabaseUser.plan === null && currentRoute !== '/pricing' && currentRoute !== '/payment' && currentRoute !== '/') {
         navigate('/pricing', { replace: true });
         return;
       }

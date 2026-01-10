@@ -7,19 +7,17 @@ const AuthFlow = () => {
   const navigate = useNavigate();
 
   // Handle user authentication state
+  // We want to stay on the landing page even if authenticated
   useEffect(() => {
     console.log('Auth state changed:', { isLoading, isAuthenticated });
-    if (!isLoading && isAuthenticated) {
-      // User is signed in, go directly to dashboard
-      console.log('User is signed in, navigating to dashboard');
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isLoading]);
 
   const handleStart = () => {
+    // Add a small delay for visual feedback if needed, but for now direct routing
     if (isAuthenticated) {
-      // User is already signed in, go to dashboard
-      navigate('/dashboard', { replace: true });
+      // User is signed in, go explicitly to dashboard
+      console.log('User is signed in, performing smart entry to dashboard');
+      navigate('/dashboard');
     } else {
       // User is not signed in, redirect to Auth0 universal login
       loginWithRedirect({
@@ -46,9 +44,9 @@ const AuthFlow = () => {
           Be prepared to be roasted!
         </p>
         <div className="pt-4">
-          <span 
+          <span
             onClick={handleStart}
-            className="click-to-start cursor-pointer"
+            className="click-to-start cursor-pointer transition-all duration-300 active:scale-95 active:opacity-80 hover:opacity-90"
           >
             click to start
           </span>
