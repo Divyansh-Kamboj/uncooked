@@ -40,7 +40,7 @@ const Pricing = () => {
     {
       id: 'free' as const,
       name: 'Free',
-      price: 'Free',
+      price: '₹ 0',
       features: [
         '10 questions a day',
         '5 AI explanations a day',
