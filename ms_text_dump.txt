@@ -1,0 +1,2542 @@
+
+========================================
+📄 Page 6
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 6 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+1(a) 
+ 
+B1 Correct shape, roughly symmetrical. Both sections should be solid 
+straight lines. If not drawn with a ruler the intention must be clear. 
+Allow construction lines if dashed or clearly fainter. 
+2a marked on each axis (must be 2a, not just 2). 
+Needs to extend into negative x. 
+If a is given a value, then B0. 
+Ignore y = 2x – 3a if seen. 
+ 
+ 
+1  
+1(b) 
+Solve linear equation or inequality to obtain critical value  
+5
+3
+x
+a
+
+ or exact equivalent.  
+B1 Ignore x
+a
+
+ if seen. 
+ 
+Obtain 
+5
+3
+x
+a
+
+ or exact equivalent 
+B1 Accept 
+10
+6
+x
+a
+
+ or 
+
+5
+3,
+.
+a
+
+ Must be strict inequality.  
+Need a clear final solution: x
+a
+
+or x
+a
+
+must be rejected if seen 
+as part of the working. Rejection can be implied, e.g. if only the 
+correct inequality is underlined. 
+B0 B0 if a is given a value. 
+ 
+Alternative Method for Question 1(b) 
+ 
+Solve quadratic equation 
+
+
+
+2
+2
+2
+3
+2
+x
+a
+x
+a
+
+
+
+ to obtain critical 
+value 
+5
+3
+x
+a
+
+ or exact equivalent 
+(B1) 
+
+2
+2
+3
+8
+5
+0
+x
+ax
+a
+
+
+
+  
+Ignore x
+a
+
+ if seen. 
+ 
+Obtain 
+5
+3
+x
+a
+
+ or exact equivalent 
+(B1) Accept 
+10
+6
+x
+a
+
+ or 
+
+5
+3,
+.
+a
+
+ Must be strict inequality.  
+Need a clear final solution: x
+a
+
+or x
+a
+
+must be rejected if seen 
+as part of the working. Rejection can be implied, e.g. if only the 
+correct inequality is underlined. 
+B0 B0 if a is given a value. 
+ 
+ 
+2  
+2a
+2a
+y
+x
+O
+
+
+========================================
+📄 Page 7
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 7 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+2  
+State or imply the form 
+2
+3
+4
+B
+C
+A
+x
+x
+
+
+
+
+  
+B1 
+2
+3
+4
+Dx
+E
+F
+x
+x
+
+
+
+
+ and 2
+3
+4
+P
+Qx
+R
+x
+x
+
+
+
+
+are also valid. 
+ 
+Use a correct method for finding a constant 
+M1 SC: If score B0, they can score M1 A1 for one correct constant. 
+B0 M1 A0 available if they substitute two values to form 
+simultaneous equations but get an incorrect answer, or they 
+substitute one value and make an arithmetic error. 
+ 
+Obtain one of 
+3,
+2 and
+4
+A
+B
+C
+
+
+
+  
+A1 SC: If the horizontal equation is correct apart from an incorrect 
+value for A, the other A marks may be available. 
+ 
+Obtain a second value 
+A1 SC: If denominator factorised as 
+
+
+3
+2
+4
+x
+x
+
+
+can score a 
+maximum of B0 M1 A1 A1 A0 for a split involving 3 terms. 
+ 
+Obtain a third value  
+A1 ISW 
+Statement of the final split is not required. 
+
+
+========================================
+📄 Page 8
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 8 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+2 
+Alternative method for Question 2 
+  
+ 
+Divide numerator by denominator 
+(M1)  
+ 
+Obtain 
+2
+3 
+2
+5
+12
+Px
+Q
+x
+x
+
+
+
+
+
+
+
+
+
+
+  
+(A1) 
+6
+20
+3
+(2
+3)(
+4)
+x
+x
+x
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+State or imply the form 
+2
+2
+5
+12
+2
+3
+4
+Px
+Q
+x
+x
+D
+E
+x
+x
+
+
+
+
+
+
+
+  
+(B1) Must deal with the 3 separately or include it correctly on both 
+sides in their split. 
+ 
+Obtain one of 
+2 and
+4
+D
+E
+
+
+  
+(A1) SC: If denominator factorised as 
+
+
+3
+2
+4 ,
+x
+x
+
+
+then can score a 
+maximum of B0 M1 A1 A1 A0 for a split involving three terms. 
+ 
+Obtain a second value  
+(A1) ISW 
+Statement of the final split is not required. 
+ 
+ 
+5  
+
+
+========================================
+📄 Page 9
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 9 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+3(a) 
+Use logarithms to obtain a correct expression without powers e.g.
+
+
+
+
+2
+1 ln
+ln
+y
+a
+x
+y
+b
+
+
+
+  
+B1 Could use logs to any base e.g. 
+
+
+2
+1
+log
+.
+a
+y
+x
+y
+b
+
+
+ 
+Do not condone missing brackets unless recovered later. 
+ 
+Separate terms and factorise to obtain 
+
+2ln
+ln
+ln
+ln
+y
+a
+b
+x
+b
+a
+
+
+
+  
+B1 Or equivalent, e.g.
+2
+2
+ln
+ln
+ln
+ln
+b
+a
+y
+x
+a b
+a b
+
+
+ or 
+
+
+2
+log
+log
+1.
+a
+a
+y
+b
+x
+b
+
+
+
+ 
+ 
+Clear explanation of linear form.  
+From correct work only. 
+ 
+B1 E.g. equation matches the linear form y
+mx
+c
+
+
+ or 
+.
+py
+qx
+r
+
+
+ 
+Condone if they compare with 
+,
+y
+mx
+c
+
+
+ but do not actually state 
+that it must therefore be a straight line. 
+Stating “this is a linear equation” without comparing to a relevant 
+standard form scores B0. 
+B0 if they have m = … and c = … correct but never actually 
+mention y = mx + c. 
+ 
+ 
+3  
+3(b) 
+Use 
+3
+a
+b
+
+ and log laws to simplify their equation 
+M1 
+3
+7
+7
+ln
+ln
+ln
+ln
+b
+b
+y
+x
+b
+b
+
+
+
+
+
+
+
+
+ 
+Denominator reduced to a single log term. 
+ 
+Obtain 
+1
+3
+7
+7
+y
+x
+
+
+  
+A1 Accept 
+3
+7
+7
+x
+y 
+
+ but not 
+3.
+7
+x
+y
+
+
+ 
+ 
+Alternative method for Question 3(b) 
+ 
+Use 
+3
+a
+b
+
+ to obtain 
+
+
+3 2
+1
+y
+x
+y
+b
+b
+
+
+
+ or equivalent 
+(M1) Or 
+1
+3
+log
+.
+a b 
+ 
+ 
+Obtain 
+1
+3
+7
+7
+y
+x
+
+
+ 
+(A1) Accept 
+3
+7
+7
+x
+y 
+
+ but not 
+3.
+7
+x
+y
+
+
+ 
+ 
+ 
+2  
+
+
+========================================
+📄 Page 10
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 10 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+4 
+Substitute 
+1
+y  and obtain ex
+a
+
+, where 
+0
+a 
+  
+M1 Must come from a quadratic in e .
+x   
+
+
+2e
+e
+6
+0
+x
+x
+
+
+
+ 
+Ignore any negative solution. 
+ 
+Obtain e
+2
+x 
+ only 
+A1 Or equivalent e.g. 
+ln2.
+x 
+ Condone x = 0.693….. 
+ 
+State or imply 
+
+
+2
+2
+2
+d
+d
+e
+2 e
+e
+d
+d
+x
+x
+x y
+y
+y
+x
+x
+
+
+  
+B1 Accept y for d .
+d
+y
+x  
+ 
+State or imply 
+
+
+2
+2
+d
+d
+e
+e
+2 e
+d
+d
+x
+x
+x y
+y
+y
+y
+x
+x
+
+
+ 
+B1 Accept y for d .
+d
+y
+x  
+ 
+Differentiate RHS of given equation to obtain zero (could be implied 
+by subsequent work), substitute for x and y and obtain d
+...
+d
+y
+x 
+  
+M1 Independent. 
+d
+d
+2
+4
+4
+2
+4
+0
+d
+d
+y
+y
+x
+x
+
+
+
+
+
+
+
+
+
+
+
+  
+NB: Could also rearrange to obtain d
+d
+y
+x
+ then substitute. Both steps 
+are needed for M1. 
+ 
+Obtain 
+5
+4
+
+ or 1.25
+
+  
+A1 Correct answer from correct working only Accept 
+10
+8 .
+
+ 
+ -1.2499 is A0. 
+
+
+========================================
+📄 Page 11
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 11 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+4 
+Alternative method for Question 4: Dividing through by 
+x
+e  
+ 
+Substitute 
+1
+y  and obtain ex
+a
+
+, where 
+0
+a 
+  
+(M1) Must come from a quadratic in e .
+x   
+
+
+2e
+e
+6
+0
+x
+x
+
+
+
+ 
+Ignore any negative solution. 
+ 
+Obtain e
+2
+x 
+ only 
+(A1) Or equivalent e.g. 
+ln2.
+x 
+ Condone x = 0.693….. 
+ 
+State or imply 
+
+
+2
+d
+d
+2
+d
+d
+y
+y
+y
+x
+x
+
+  
+(B1) Accept y for d .
+d
+y
+x  
+ 
+State or imply 
+
+
+d
+d
+e
+e
+d
+d
+x
+x
+x y
+ye
+y
+x
+x
+
+
+  
+(B1) Accept y for d .
+d
+y
+x  
+ 
+Differentiate RHS of given equation to obtain 6e x
+
+
+, substitute for x 
+and y and obtain d
+.....
+d
+y
+x 
+  
+(M1) Independent. 
+d
+d
+6
+1 2
+2
+2
+d
+d
+2
+y
+y
+x
+x
+
+
+
+
+
+
+
+
+
+
+  
+NB: Could also rearrange to obtain d
+d
+y
+x  then substitute. Both steps 
+are needed for M1. 
+ 
+Obtain 
+5
+4
+
+ or 1.25
+
+  
+(A1) Correct answer from correct working only Accept 
+10
+8 .
+
+ 
+ -1.2499 is A0. 
+ 
+ 
+6  
+
+
+========================================
+📄 Page 12
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 12 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+5(a) 
+Calculate the value of a relevant expression or values of a pair of 
+expressions at 
+0.7
+x 
+ and 
+0.8
+x 
+  
+M1 Allow if working with a smaller interval, e.g. (0.72, 0.78). 
+Need all relevant values but condone one error. 
+Pairings must be clear for solutions involving four values (do not 
+accept embedded values). 
+M0 if working in degrees e.g -1.94…, 1.04… 
+ 
+Complete the argument correctly with correct calculated values. 
+(can be using the equation in the rubric or the equation in (b) or 
+equivalent) 
+A1 E.g. 4.95...
+4.26...
+
+ and 4.06...
+4.49...
+
+  
+-0.439…< 0, 0.690…> 0 
+1.4 < 1.5029…, 1.6 > 1.449…  
+1.1 > 1, 0.86 < 1 
+0.0515 > 0, -0.075 < 0. 
+Allow values rounded or truncated to 2sf. 
+ 
+ 
+2  
+5(b) 
+State 
+
+
+2
+ln 5
+cos3
+x
+x
+
+
+ and take exponential of both sides to 
+obtain 
+2e
+5
+cos3
+x
+x
+
+
+ 
+B1 Given answer requires fully correct working or work vice versa. 
+If working in reverse, must get to the iterative formula, including 
+subscripts. 
+ 
+ 
+1  
+5(c) 
+Use the iterative process correctly at least once 
+M1 M0 if working in degrees (e.g. values heading for 0.89….). 
+ 
+Obtain final answer 0.740 
+A1  
+ 
+Show sufficient iterations to at least 5dp to justify 0.740 to 3dp, or  
+show that there is a sign change in the interval 
+
+0.7395, 0.7405   
+A1 E.g. 0.7,0.75150,0.73719,0.74105,0.74000,0.74028  
+0.75,0.73759,0.74094,0.74003,0.74028 
+0.8,0.72494,0.74443,0.73909,0.74053,0.74014,0.74025   
+Allow recovery. Allow truncation or rounding and condone small 
+differences in the final decimal place. 
+ 
+ 
+3  
+
+
+========================================
+📄 Page 13
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 13 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+6(a) 
+Use correct product rule 
+*M1 Or equivalent. Condone incorrect chain rule. 
+M0 if a value is used for a (not equivalent work). 
+ 
+Obtain correct derivative 
+A1 E.g. d
+e
+e
+d
+ax
+ax
+y
+ax
+x
+
+
+
+
+  
+ 
+Equate derivative to zero and solve for x 
+DM1  
+ 
+Obtain 
+1
+1
+e
+,
+a
+a
+x
+y
+
+
+  
+A1 ISW 
+Or exact equivalent.  
+ 
+ 
+4  
+6(b) 
+Use integration by parts to obtain 
+e
+e
+d
+ax
+ax
+px
+q
+x
+
+
+
+  
+*M1 Condone sign error in parts formula and omission of dx. 
+M0 if a value is used for a (not equivalent work). 
+ 
+Obtain 
+1
+1
+e
+e
+d
+ax
+ax
+a
+a
+x
+x
+
+
+
+
+ 
+A1 OE 
+ 
+Complete integration to obtain 
+2
+1
+1
+e
+e
+ax
+ax
+a
+a
+x
+
+
+
+
+ 
+A1 OE 
+ 
+Correct use of limits 0 and 2
+a  in an expression of the form 
+e
+e
+ax
+ax
+rx
+s
+
+
+
+  
+DM1 
+
+2
+2
+2
+2
+2
+2
+1
+1
+e
+e
+0
+a
+a
+a
+
+
+
+
+
+
+  
+ 
+Obtain 
+
+
+2
+2
+1 1
+3e
+a
+
+
+  
+A1 ISW 
+Or simplified 2-term equivalent, e.g. 
+2
+2
+2
+e
+3.
+e
+a
+
+  
+ 
+ 
+5  
+
+
+========================================
+📄 Page 14
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 14 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+7(a) 
+Factorise LHS using difference of 2 squares 
+*M1 
+
+
+
+
+
+2
+2
+2
+2
+cos
+sin
+cos
+sin
+
+
+
+
+
+
+  
+ 
+Simplify  
+DM1 
+2
+2
+cos
+sin
+1
+
+
+
+ must be seen or implied, e.g. 
+
+
+
+
+2
+2
+2
+2
+2
+2
+cos
+sin
+cos
+sin
+cos
+sin
+.
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+Obtain 
+4
+4
+cos
+sin
+cos2
+
+
+
+
+
+ from correct working 
+A1 AG 
+ 
+Alternative Method for Question 7(a) 
+  
+ 
+Use of correct rearrangements of double angle formulae 
+(*M1) 
+E.g.
+2
+2
+1
+cos2
+1
+cos2
+2
+2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+Only condone 
+2
+2
+1
+cos2
+cos2
+1
+2
+2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if correct expression for 
+2
+sin  seen. 
+ 
+Expand and simplify 
+(DM1) Collect like terms. Condone recovery from missing brackets. 
+ 
+Obtain 
+4
+4
+cos
+sin
+cos2
+
+
+
+
+
+ from correct working 
+(A1) AG 
+ 
+Alternative Method 2 for Question 7(a) 
+  
+ 
+Correct use of Pythagoras 
+(*M1) E.g. 
+
+2
+2
+4
+1
+sin
+sin
+
+
+
+
+ or 
+
+
+
+
+2
+2
+2
+2
+cos
+1
+sin
+sin
+1
+cos
+
+
+
+
+
+
+
+ 
+ 
+Expand and simplify 
+(DM1) Condone recovery from missing brackets. 
+ 
+Obtain 
+4
+4
+cos
+sin
+cos2
+
+
+
+
+
+ from correct working 
+(A1) AG 
+ 
+ 
+3  
+
+
+========================================
+📄 Page 15
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 15 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+7(b) 
+Use part (a) and correct double angle formula to obtain expression 
+involving 
+2
+sin 2 d
+
+
+ or 
+2
+cos 2 d
+
+
+ 
+M1 
+4
+4
+2
+2
+2
+cos
+sin
+4sin
+cos
+d
+cos2
+sin 2 d
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+Allow BOD for 
+2
+2sin 2if sin2
+2sin cos
+
+
+
+
+ seen. 
+ 
+1
+2
+cos2
+sin 2
+d
+
+
+
+
+  
+B1 Seen or implied. 
+ 
+Use of correct double angle formula on second part of the integral to 
+obtain a form that can be integrated directly 
+M1 e.g.
+2
+1
+cos4
+sin 2 d
+d
+2
+
+
+
+
+
+
+ 
+ 
+Obtain 1
+1
+2
+8 sin4
+
+
+
+  
+A1 Condone a mixture of x and .
+ 
+ 
+Correct use of limits 
+π
+8
+
+ in an expression of the form 
+sin 2
+sin 4
+p
+q
+r
+
+
+
+
+
+ and evaluate the trig  
+M1 
+
+
+
+
+1
+1
+1
+2
+16
+8
+2
+2
+
+
+
+
+  
+ 
+Obtain 1
+1
+1
+2
+8
+4
+2
+
+
+
+  
+A1 ISW 
+Or exact equivalent from exact working.  
+ 
+ 
+6  
+
+
+========================================
+📄 Page 16
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 16 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+8(a) 
+Correct direction vector seen or implied (
+3
+3
+3
+BC 
+
+
+
+i
+j
+k )  
+B1 Condone 
+3
+3
+3 .
+BC 
+
+
+
+i
+j
+k  
+ 
+Use a correct method to form a vector equation 
+M1 Allow for the RHS with no LHS. 
+ 
+Obtain 
+
+
+5
+2
+
+
+
+
+
+r
+i
+j
+i
+j
+k   
+A1 ISW 
+Must have r = … or 
+...
+x
+y
+z
+
+
+
+
+
+
+, not l1 = … 
+Or, equivalent vector form, e.g. 
+
+
+8
+5
+3
+
+
+
+
+
+
+r
+i
+j
+k
+i
+j
+k  or 
+
+
+5
+2
+3
+3
+3
+.
+
+
+
+
+
+
+r
+i
+j
+i
+j
+k
+  
+Condone a column vector with i, j, k.  
+ 
+ 
+3  
+8(b) 
+Use components to form two relevant equations in 2 unknowns 
+For their l1 B0 if they use the same unknown for both lines. 
+B1FT 
+Two components of 
+5
+2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ = 
+2
+3
+1
+4
+2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ seen or implied.  
+ 
+Solve 2 relevant equations in 2 unknowns for  or  
+M1 For their l1.  
+ 
+Obtain 
+2
+
+ or 
+3
+
+  
+A1 Or equivalent e.g. using BC
+
+ as direction vector gives 
+2
+3 .
+
+  
+ 
+Obtain 
+
+7, 4,
+2
+
+  
+No need to check the third equation – the question implies that the 
+lines intersect.  
+A1 Accept position vector. Condone a column vector with i, j, k. 
+SC: B1 M1 A1 A1 if one component of their line is incorrect but 
+they do not use that component. 
+ 
+ 
+4  
+
+
+========================================
+📄 Page 17
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 17 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+8(c) 
+State 
+
+
+2
+2
+2
+7
+1
+4
+66
+AB 
+
+
+
+  
+B1 Or 
+
+2
+66
+AB
+
+ Condone a sign error in 
+.
+AB
+
+ 
+ 
+State BD
+
+ in component form 
+B1 
+7
+3
+1
+4
+2
+r
+r
+r
+
+
+
+
+
+
+
+
+
+
+
+
+
+ or equivalent. 
+ 
+
+
+
+
+
+
+2
+2
+2
+3
+7
+1
+2
+4
+66
+AB
+BD
+r
+r
+r
+
+
+
+
+
+
+
+
+  
+
+
+2
+14
+60
+0
+r
+r
+
+
+  
+M1 Or equivalent equation in one unknown for their AB and their
+.
+BD
+OD
+
+
+
+ 
+If you never see a correct form and they go direct to 
+2
+2
+9
+49
+1.....
+r
+r
+
+
+
+then M0. 
+ 
+30
+7
+r
+
+
+  
+A1 Correct only. Ignore r = 0 if seen.  
+ 
+76
+37
+32
+7
+7
+7
+OD 
+
+
+
+i
+j
+k   
+A1 Must be a vector.  
+Condone if also have 
+.
+OD
+OA
+
+
+
+ 
+ 
+ 
+5  
+ 
+ 
+  
+Question 
+Answer 
+Marks 
+Guidance 
+9(a) 
+State 
+
+
+
+3
+3 3
+3
+3 3 i
+z
+
+
+  
+B1 Or exact equivalent with real and imaginary parts collected.  
+Need brackets around the coefficient of i.  
+Allow for a =, b = stated correctly. 
+ 
+ 
+1  
+
+
+========================================
+📄 Page 18
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 18 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+9(b) 
+Obtain 
+2
+z 
+  
+B1  
+ 
+Obtain 
+π
+4
+arg z  final answer 
+B1  
+ 
+Obtain 
+6
+
+  
+B1  
+ 
+Obtain 
+2π
+3
+arg
+ final answer 
+B1  
+ 
+ 
+4  
+9(c) 
+ 
+ Note: The question does not require the diagram. 
+If they use 5π
+12  they need to demonstrate where it comes from. 
+Complex number equivalent to AB is 3 3
+3i.
+
+ 
+ 
+Show 
+6,
+OA
+AB
+
+
+ hence isosceles 
+B1 One mark for ‘isosceles’ and one mark for ‘right angle’.  
+There will be alternatives e.g. use of Pythagoras (ratio of lengths is 
+1:1:
+2 ), expressing each number in “vector” form and using 
+scalar product or explaining the effect of multiplying by 1 – i. 
+ 
+π
+4
+arg
+arg
+arg
+AOB
+z
+z
+
+
+
+
+
+
+
+ hence third angle is a right 
+angle 
+B1 
+ 
+ 
+2  
+B
+A
+O
+Im
+Re
+(-3+3 3)+(3+3 3)i
+-3+3 3i
+
+
+========================================
+📄 Page 19
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 19 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+9(d) 
+
+
+2
+5
+3
+4
+12
+arg
+arg
+arg
+z
+z
+
+
+
+
+
+
+
+
+
+
+  
+M1 For showing correct use of their angles from part (b). 
+Must demonstrate where 5π
+12  comes from.  
+ 
+1 3
+3 3
+arg
+tan
+3
+3 3
+z
+
+
+
+
+  
+M1 Correct method for their z from part (a).  
+Must link to point B on diagram or to arg
+.
+z 
+Need to see 
+1 3
+3 3
+tan
+3
+3 3
+
+
+
+ or 
+3
+3 3
+tan
+3
+3 3
+
+
+
+
+ and not just 
+1 1
+3
+tan
+.
+1
+3
+
+
+
+ 
+ 
+
+
+5
+12
+3
+1
+tan
+3
+1
+
+
+
+
+
+  
+A1 Obtain given answer from full and correct working. 
+ 
+ 
+3  
+ 
+ 
+  
+Question 
+Answer 
+Marks 
+Guidance 
+10(a) 
+Use of correct chain rule (and correct quotient rule) and 
+3
+cos 
+
+ 
+M1 Obtain 
+
+
+4
+cos
+sin
+k
+
+
+
+
+
+ or equivalent.  
+ 
+
+
+4
+4
+d
+3
+sin
+cos
+3sin sec
+d
+y
+
+
+
+
+
+
+
+
+  
+Must be expressed in the given form 
+A1 Obtain given answer from full and correct working (signs must be 
+shown), but condone 
+
+
+3
+d
+d
+sec
+....
+
+
+ and
+'( ).
+y 
+ 
+ 
+ 
+2  
+
+
+========================================
+📄 Page 20
+========================================
+9709/32 
+Cambridge International A Level – Mark Scheme 
+PUBLISHED 
+May/June 2024 
+ 
+© Cambridge University Press & Assessment 2024 
+Page 20 of 20 
+ 
+Question 
+Answer 
+Marks 
+Guidance 
+10(b) 
+Separate variables: 
+
+
+
+
+4
+2
+3
+sin
+d
+d
+cos
+9
+x
+x
+x
+
+
+
+
+
+
+
+
+
+
+
+ 
+B1 Or 
+4
+2
+d
+d .
+3sin
+3
+9
+cos
+9
+x
+x
+x
+
+
+
+
+
+
+
+
+
+
+
+
+  
+Condone missing integral signs or missing d  or d ,
+x
+
+ but not both. 
+ 
+Obtain 
+
+
+3
+sec
+p
+A
+
+  
+B1 Correct form, p any constant but not 0. 
+ 
+Use 
+2
+2
+2
+d
+d
+3
+9
+3
+9
+9
+9
+9
+x
+x
+x
+x
+x
+x
+x
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ and obtain 
+
+
+2
+ln
+9
+q
+x 
+ or 
+
+
+1
+3
+tan
+.
+x
+r
+C
+
+
+ 
+*M1 Might have one third of both sides. 
+Alt: substitute 
+3tan
+x
+
+
+to obtain 
+1
+tan d ;
+q
+
+
+
+condone if have 
+ in place of  in this method. 
+ 
+Obtain 
+
+
+2
+ln
+9
+q
+x 
+ and 
+
+
+1
+3
+tan
+x
+r
+C
+
+
+  
+DM1 Obtain 
+
+
+
+
+ln cos
+q 
+
+
+ OE. 
+ 
+Obtain 
+
+
+
+
+3
+2
+1
+3
+2
+3
+sec
+ln
+9
+3tan
+x
+x
+C
+
+
+
+
+
+
+ or equivalent 
+A1 Or might see a third of both sides. Must have 2 different variables.  
+ 
+Use 
+1
+3 ,
+3
+x
+
+
+
+
+ in an equation including 
+3
+sec
+,
+p
+
+
+
+2
+ln
+9
+q
+x 
+and 
+1
+3
+tan
+x
+r
+
+ to evaluate the constant of integration 
+M1 Or as limits in a definite integral. 
+Limits for  are 0 and 1
+4
+.
+ 
+ 
+Obtain constant = 
+3
+3
+2
+4
+8
+ln18
+
+
+
+  
+A1 OE, e.g. 1.308… to at least 3sf. 
+ 
+Obtain cos
+0.601
+
+  
+A1 Accept AWRT 0.601.  
+ 
+ 
+8  
+ 
+
