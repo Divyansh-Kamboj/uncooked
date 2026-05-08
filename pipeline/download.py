@@ -24,8 +24,8 @@ DOWNLOAD_URL_TEMPLATE = "{base}/api/file/caie/a-level/mathematics-9709/{year}-{m
 # Month word used in pastpapers.co URL paths
 SESSION_MONTH_WORD = {
     "m": "march",
-    "s": "may",
-    "w": "october",
+    "s": "may-june",
+    "w": "oct-nov",
 }
 
 # All component numbers for 9709

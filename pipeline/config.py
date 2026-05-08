@@ -47,8 +47,8 @@ SESSION_CODE_MAP = {
 # Session code → month word used in pastpapers.co URLs
 SESSION_MONTH_WORD = {
     "m": "march",
-    "s": "may",
-    "w": "october",
+    "s": "may-june",
+    "w": "oct-nov",
 }
 
 # DB session name → (folder_suffix, file_prefix)
