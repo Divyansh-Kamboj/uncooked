@@ -27,20 +27,29 @@ def _get_client() -> Client:
 
 # ── Read operations ────────────────────────────────────────────────────────────
 
+def _fetch_all_paginated(query_builder) -> list[dict]:
+    """Fetch all rows using Supabase's range-based pagination (default limit is 1000)."""
+    PAGE_SIZE = 1000
+    all_rows: list[dict] = []
+    offset = 0
+    while True:
+        resp = query_builder.range(offset, offset + PAGE_SIZE - 1).execute()
+        batch = resp.data or []
+        all_rows.extend(batch)
+        if len(batch) < PAGE_SIZE:
+            break
+        offset += PAGE_SIZE
+    return all_rows
+
+
 def get_questions_missing_answers() -> list[dict]:
     """
-    Fetch all rows where answer_img IS NULL.
-    Returns list of row dicts.
+    Fetch ALL rows where answer_img IS NULL (paginated to bypass 1000-row default limit).
     """
     client = _get_client()
     try:
-        resp = (
-            client.table(TABLE)
-            .select("*")
-            .is_("answer_img", "null")
-            .execute()
-        )
-        rows = resp.data or []
+        query = client.table(TABLE).select("*").is_("answer_img", "null").order("id")
+        rows = _fetch_all_paginated(query)
         logger.info("Fetched %d records with answer_img IS NULL", len(rows))
         return rows
     except Exception as exc:
@@ -50,17 +59,12 @@ def get_questions_missing_answers() -> list[dict]:
 
 def get_questions_missing_explanations() -> list[dict]:
     """
-    Fetch all rows where ai_explanation IS NULL.
+    Fetch ALL rows where ai_explanation IS NULL (paginated).
     """
     client = _get_client()
     try:
-        resp = (
-            client.table(TABLE)
-            .select("*")
-            .is_("ai_explanation", "null")
-            .execute()
-        )
-        rows = resp.data or []
+        query = client.table(TABLE).select("*").is_("ai_explanation", "null").order("id")
+        rows = _fetch_all_paginated(query)
         logger.info("Fetched %d records with ai_explanation IS NULL", len(rows))
         return rows
     except Exception as exc:
