@@ -1,14 +1,13 @@
 """
-match.py — Match question images to mark scheme pages using Gemini Vision.
+match.py — Match question images to mark scheme pages.
 
-Strategy:
-  1. build_ms_index(): scan ALL MS pages ONCE per paper → {qnum: [pages]} dict.
+Primary strategy (zero API calls):
+  1. build_ms_index_from_pdf(): extract text from each MS PDF page using
+     pypdfium2, regex-match question numbers → {qnum: [page_paths]} dict.
   2. match_from_index(): O(1) lookup per question from the pre-built index.
-  3. Fallback: vision-based comparison if numeric match yields nothing.
 
-IMPORTANT: always call build_ms_index() once per paper, then match_from_index()
-per question. Never call match_question_to_ms() in a loop — it re-scans all
-pages for every question, which is N*M Gemini calls instead of just M.
+Gemini Vision fallback (only if PDF has no text layer):
+  3. build_ms_index(): Gemini Vision scan of PNG images — use sparingly.
 """
 import json
 import logging
@@ -17,6 +16,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
+import pypdfium2 as pdfium
 from google import genai
 from google.genai import types
 
@@ -90,6 +90,84 @@ def _normalize_qnum(q: str) -> str:
     q = q.strip().lower()
     m = re.match(r"(\d+)", q)
     return m.group(1) if m else q
+
+
+def _extract_qnums_from_text(text: str) -> list[str]:
+    """
+    Extract question numbers from a CAIE mark scheme PDF page.
+
+    CAIE MSs have a "Question Answer Marks" column header before each
+    question section. We split on that header and read only the first
+    non-empty line of each section, which is the question number (e.g.
+    "1", "2(a)", "3(b)(i)"). This avoids false positives from mathematical
+    content embedded in the answer text.
+    """
+    found: set[str] = set()
+    # Match "Question Answer Marks" with optional trailing words (e.g. "Guidance")
+    sections = re.split(r"Question\s+Answer\s+Marks[^\n]*", text, flags=re.IGNORECASE)
+    for section in sections[1:]:  # sections[0] is pre-header boilerplate
+        for line in section.split("\n"):
+            stripped = line.strip()
+            if not stripped:
+                continue
+            m = re.match(
+                r"^(\d{1,2})(?:\s*\([a-z]\)(?:\s*\([ivx]+\))*)?(?:\s|$)", stripped
+            )
+            if m:
+                n = int(m.group(1))
+                if 1 <= n <= 20:
+                    found.add(str(n))
+            break  # only the first non-empty line per section
+    return sorted(found, key=int)
+
+
+def build_ms_index_from_pdf(
+    ms_pdf_path: Path,
+    ms_page_images: list[tuple[int, Path]],
+) -> dict[str, list[Path]]:
+    """
+    Build the MS question→pages index from the PDF text layer. Zero API calls.
+
+    Uses pypdfium2 to extract the text from each page, then regexes for
+    CAIE-style question numbers. Works for all native-digital CAIE PDFs.
+    Returns an empty dict if the PDF has no text layer (scanned documents).
+
+    Args:
+        ms_pdf_path:    Path to the mark scheme PDF.
+        ms_page_images: List of (page_num_1indexed, png_path) from split_ms().
+
+    Returns:
+        {normalized_question_number: [page_image_paths]}
+    """
+    index: dict[str, list[Path]] = {}
+    page_image_map = {pn: ip for pn, ip in ms_page_images}
+
+    try:
+        doc = pdfium.PdfDocument(str(ms_pdf_path))
+    except Exception as exc:
+        logger.warning("Cannot open PDF for text extraction: %s", exc)
+        return index
+
+    try:
+        for i in range(len(doc)):
+            page_num = i + 1
+            img_path = page_image_map.get(page_num)
+            if img_path is None:
+                continue
+            try:
+                textpage = doc[i].get_textpage()
+                text = textpage.get_text_range()
+                nums = _extract_qnums_from_text(text)
+                logger.debug("PDF page %d → questions: %s", page_num, nums)
+                for n in nums:
+                    index.setdefault(n, []).append(img_path)
+            except Exception as exc:
+                logger.debug("Text extraction page %d: %s", page_num, exc)
+    finally:
+        doc.close()
+
+    logger.info("Text-based MS index: %d question entries", len(index))
+    return index
 
 
 def build_ms_index(ms_page_images: list[tuple[int, Path]]) -> dict[str, list[Path]]:

@@ -38,7 +38,7 @@ from download import download_session, download_single_ms
 from split import split_qp, split_ms
 from classify import classify_question
 from explain import generate_explanation
-from match import match_question_to_ms, build_ms_index, match_from_index
+from match import match_question_to_ms, build_ms_index, build_ms_index_from_pdf, match_from_index
 from upload import upload_question_image, upload_answer_image
 from db import (
     upsert_question,
@@ -422,8 +422,15 @@ def _backfill_paper_group(
     if not ms_pages:
         raise RuntimeError(f"No pages extracted from {ms_pdf.name}")
 
-    # Build MS index ONCE for this paper (M Gemini calls, not N*M)
-    ms_index = build_ms_index(ms_pages)
+    # Build MS index from PDF text layer — zero Gemini calls.
+    # Falls back to Gemini Vision only if text extraction yields nothing.
+    ms_index = build_ms_index_from_pdf(ms_pdf, ms_pages)
+    if not ms_index:
+        logger.warning(
+            "Text extraction empty for %s %s %s %s — falling back to Gemini Vision",
+            session, paper_year, component, paper_code,
+        )
+        ms_index = build_ms_index(ms_pages)
 
     # Match and upload for each question record
     for rec in tqdm(records, desc=f"{component} {paper_code}", unit="q", leave=False):
