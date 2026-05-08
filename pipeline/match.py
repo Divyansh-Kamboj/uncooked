@@ -2,18 +2,13 @@
 match.py — Match question images to mark scheme pages using Gemini Vision.
 
 Strategy:
-  1. Extract question number from each MS page via Gemini (primary).
-  2. Return pages whose extracted question number matches the target question number.
-  3. Fallback: if no numeric match found, use Gemini to visually identify the best match.
+  1. build_ms_index(): scan ALL MS pages ONCE per paper → {qnum: [pages]} dict.
+  2. match_from_index(): O(1) lookup per question from the pre-built index.
+  3. Fallback: vision-based comparison if numeric match yields nothing.
 
-Usage:
-    from match import match_question_to_ms
-    ms_pages = match_question_to_ms(
-        question_image_path=Path("..."),
-        question_number="5",
-        ms_page_images=[(1, Path("...page_001.png")), ...],
-    )
-    # returns list of Paths that correspond to this question's mark scheme
+IMPORTANT: always call build_ms_index() once per paper, then match_from_index()
+per question. Never call match_question_to_ms() in a loop — it re-scans all
+pages for every question, which is N*M Gemini calls instead of just M.
 """
 import json
 import logging
@@ -94,6 +89,37 @@ def _normalize_qnum(q: str) -> str:
     q = q.strip().lower()
     m = re.match(r"(\d+)", q)
     return m.group(1) if m else q
+
+
+def build_ms_index(ms_page_images: list[tuple[int, Path]]) -> dict[str, list[Path]]:
+    """
+    Scan ALL mark scheme pages ONCE and return a lookup dict.
+
+    Call this once per paper, then use match_from_index() for each question.
+    This costs M Gemini calls (one per MS page) rather than N*M (one per
+    question × page).
+
+    Returns:
+        {normalized_question_number: [page_paths]}
+    """
+    index: dict[str, list[Path]] = {}
+    logger.info("Building MS index for %d pages...", len(ms_page_images))
+    for page_num, page_path in ms_page_images:
+        nums = _extract_ms_question_numbers(page_path, sleep_after=True)
+        logger.debug("MS page %d → questions: %s", page_num, nums)
+        for n in nums:
+            norm = _normalize_qnum(n)
+            index.setdefault(norm, []).append(page_path)
+    logger.info("MS index built: %d question entries", len(index))
+    return index
+
+
+def match_from_index(question_number: str, ms_index: dict[str, list[Path]]) -> list[Path]:
+    """
+    O(1) lookup from a pre-built MS index (see build_ms_index).
+    Returns matching page paths, or [] if not found.
+    """
+    return ms_index.get(_normalize_qnum(question_number), [])
 
 
 def match_question_to_ms(

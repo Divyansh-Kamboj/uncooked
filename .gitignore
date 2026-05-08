@@ -1,8 +1,13 @@
 .env
+.env.local
+.env.*
 __pycache__/
 *.pyc
 .idea/
 .vscode/
+
+# Pipeline credentials
+pipeline/.env
 
 # Test files and temporary content
 test.py
@@ -11,3 +16,6 @@ paper.txt
 *.pdf
 question_images/
 question images/
+
+# Playwright test artifacts
+.playwright-mcp/
