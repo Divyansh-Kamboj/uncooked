@@ -91,5 +91,32 @@ TOPIC_WHITELIST = [
 ]
 
 # ── Gemini rate limiting ───────────────────────────────────────────────────────
-# Free tier: ~15 RPM.  Sleep this many seconds between consecutive Gemini calls.
-GEMINI_SLEEP_SECONDS = 4
+# Free tier: 15 RPM. 6s between calls = 10 RPM — comfortable headroom.
+GEMINI_SLEEP_SECONDS = 6
+# Max seconds to wait on a 429 before retrying (exponential backoff caps here)
+GEMINI_BACKOFF_MAX = 60
+
+
+def gemini_call_with_backoff(fn, *args, max_retries: int = 6, **kwargs):
+    """
+    Call fn(*args, **kwargs) with exponential backoff on 429 rate-limit errors.
+    Raises the last exception if all retries are exhausted.
+    """
+    import time as _time
+    import logging as _logging
+    _log = _logging.getLogger(__name__)
+    wait = 10
+    for attempt in range(max_retries):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as exc:
+            msg = str(exc)
+            if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "quota" in msg.lower():
+                if attempt + 1 >= max_retries:
+                    raise
+                actual_wait = min(wait, GEMINI_BACKOFF_MAX)
+                _log.warning("Gemini 429 – waiting %ds before retry %d/%d", actual_wait, attempt + 1, max_retries)
+                _time.sleep(actual_wait)
+                wait = min(wait * 2, GEMINI_BACKOFF_MAX)
+            else:
+                raise

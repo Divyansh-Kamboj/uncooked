@@ -13,7 +13,7 @@ from typing import Optional
 from google import genai
 from google.genai import types
 
-from config import GEMINI_API_KEY, GEMINI_MODEL, GEMINI_SLEEP_SECONDS
+from config import GEMINI_API_KEY, GEMINI_MODEL, GEMINI_SLEEP_SECONDS, gemini_call_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ def generate_explanation(
         with open(image_path, "rb") as f:
             image_bytes = f.read()
 
-        response = client.models.generate_content(
+        response = gemini_call_with_backoff(client.models.generate_content,
             model=GEMINI_MODEL,
             contents=[
                 types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
